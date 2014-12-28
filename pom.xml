@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>com.terradue.air</groupId>
+    <artifactId>air</artifactId>
+    <version>0.1-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>sar-helpers</artifactId>
+  <packaging>rpm</packaging>
+  <description>SAR helper functions</description>
+  <version>1.1-SNAPSHOT</version>
+
+ <!-- <properties>
+    <redmine.projectID>cioppy</redmine.projectID>
+  </properties>-->
+
+  <dependencies>
+    
+  </dependencies>
+
+	<scm>
+	 <connection>scm:git:git@github.com:Terradue/sar-helpers</connection>
+	 <developerConnection>scm:git:git@github.com:Terradue/sar-helpers.git</developerConnection>
+	 <url>https://github.com/Terradue/sar-helpers</url>
+	 <tag>HEAD</tag>
+   </scm>>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.nuiton.jredmine</groupId>
+        <artifactId>jredmine-maven-plugin</artifactId>
+        <inherited>false</inherited>
+      </plugin>
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <version>2.4</version>
+        <executions>
+<!--          <execution> -->
+<!--            <id>rpm</id> this is used for inheritance merges -->
+<!--            <phase>prepare-package</phase> bind to the packaging phase -->
+<!--            <goals> -->
+<!--              <goal>single</goal> -->
+<!--            </goals> -->
+<!--            <configuration> -->
+<!--              <attach>false</attach> -->
+<!--              <descriptors> -->
+<!--                <descriptor>${basedir}/src/main/assembly/rpm.xml</descriptor> -->
+<!--              </descriptors> -->
+<!--              <outputDirectory>${project.build.directory}/dependencies</outputDirectory> -->
+<!--              <appendAssemblyId>false</appendAssemblyId> -->
+<!--              <finalName>/</finalName> -->
+<!--            </configuration> -->
+<!--          </execution> -->
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>rpm-maven-plugin</artifactId>
+        <configuration>
+          <copyright>2013, Terradue</copyright>
+          <distribution>Terradue 2013</distribution>
+          <group>ciop</group>
+          <packager>Terradue</packager>
+          <name>${project.artifactId}</name>
+          <defaultUsername>root</defaultUsername>
+          <defaultGroupname>root</defaultGroupname>
+          <defaultDirmode>755</defaultDirmode>
+          <defaultFilemode>644</defaultFilemode>
+          <mappings>
+          
+			<mapping>
+			<directoryIncluded>true</directoryIncluded>
+			<directory>/usr/lib/sar-helpers</directory>
+			<sources>
+			<source>
+			<location>${basedir}/src/main/resources</location>
+			</source>
+			</sources>
+			</mapping>
+           </mappings>
+          <provides>
+            <provide>${project.artifactId}</provide>
+          </provides>
+          <requires>
+            <require>libxml2-python</require>
+            <require>libxml2-devel</require>
+            <require>gdal-python</require>
+            <require>python-setuptools</require>
+          </requires>
+          <needarch>noarch</needarch>
+          <!-- <postinstallScriptlet>
+            <scriptFile>${project.basedir}/src/main/scripts/install.sh</scriptFile>
+            <fileEncoding>utf-8</fileEncoding>
+          </postinstallScriptlet>-->
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>com.terradue</groupId>
+        <artifactId>rpmdeploy-maven-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>
+
