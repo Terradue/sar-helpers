@@ -74,7 +74,7 @@
           
 			<mapping>
 			<directoryIncluded>true</directoryIncluded>
-			<directory>/usr/lib/sar-helpers</directory>
+			<directory>/opt/sar-helpers</directory>
 			<sources>
 			<source>
 			<location>${basedir}/src/main/resources</location>
