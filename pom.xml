@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.terradue.ciop.app</groupId>
   <artifactId>sar-helpers</artifactId>
-  <packaging>pom</packaging>
+  <packaging>rpm</packaging>
   <name>sar-helpers</name>
   <description>SAR helper functions</description>
   <version>0.1-SNAPSHOT</version>
@@ -44,39 +44,66 @@
   <build>
     <plugins>
       <plugin>
-        <groupId>org.nuiton.jredmine</groupId>
-        <artifactId>jredmine-maven-plugin</artifactId>
-        <inherited>false</inherited>
-      </plugin>
-      <plugin>
-        <artifactId>maven-assembly-plugin</artifactId>
-        <version>2.4</version>
-        <executions>
-          <!--          <execution> -->
-          <!--            <id>rpm</id> this is used for inheritance merges -->
-          <!--            <phase>prepare-package</phase> bind to the packaging phase -->
-          <!--            <goals> -->
-          <!--              <goal>single</goal> -->
-          <!--            </goals> -->
-          <!--            <configuration> -->
-          <!--              <attach>false</attach> -->
-          <!--              <descriptors> -->
-          <!--                <descriptor>${basedir}/src/main/assembly/rpm.xml</descriptor> -->
-          <!--              </descriptors> -->
-          <!--              <outputDirectory>${project.build.directory}/dependencies</outputDirectory> -->
-          <!--              <appendAssemblyId>false</appendAssemblyId> -->
-          <!--              <finalName>/</finalName> -->
-          <!--            </configuration> -->
-          <!--          </execution> -->
-        </executions>
-      </plugin>
+      <artifactId>maven-clean-plugin</artifactId>
+      <version>2.5</version>
+      <configuration>
+      <filesets>
+      <fileset>
+      <directory>/opt/sar-helpers</directory>
+      <includes>
+      <include>**/*</include>
+      </includes>
+<followSymlinks>false</followSymlinks>
+</fileset>
+</filesets>
+</configuration>
+</plugin>
+  
+<plugin>
+<groupId>org.codehaus.mojo</groupId>
+<artifactId>build-helper-maven-plugin</artifactId>
+<version>1.8</version>
+<executions>
+<execution>
+<id>parse-version</id>
+<goals>
+<goal>parse-version</goal>
+</goals>
+</execution>
+</executions>
+</plugin> 
+
+<plugin>
+<artifactId>maven-resources-plugin</artifactId>
+<version>2.6</version>
+<executions>
+<execution>
+<id>copy-app-resources</id>
+<phase>install</phase>
+<goals>
+<goal>copy-resources</goal>
+</goals>
+<configuration>
+<outputDirectory>${project.build.directory}/sar-helpers</outputDirectory>
+<resources>
+<resource>
+<directory>${basedir}/src/main/resources</directory>
+</resource>
+</resources>
+</configuration>
+</execution>
+</executions>
+</plugin>
+
+ 
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>rpm-maven-plugin</artifactId>
+<extensions>true</extensions>
         <configuration>
           <copyright>2013, Terradue</copyright>
           <distribution>Terradue 2013</distribution>
-          <group>ciop</group>
+          <group>air</group>
           <packager>Terradue</packager>
           <name>${project.artifactId}</name>
           <defaultUsername>root</defaultUsername>
@@ -110,6 +137,42 @@
           </postinstallScriptlet>-->
         </configuration>
       </plugin>
+      <plugin>
+      <groupId>org.apache.maven.plugins</groupId>
+      <artifactId>maven-release-plugin</artifactId>
+      <version>2.5</version>
+      <dependencies>
+      <dependency>
+      <groupId>org.apache.maven.scm</groupId>
+      <artifactId>maven-scm-provider-gitexe</artifactId>
+      <version>1.9</version>
+      </dependency>
+      </dependencies>
+      </plugin>
+      <plugin>
+      <groupId>de.jutzig</groupId>
+      <artifactId>github-release-plugin</artifactId>
+      <version>1.0.3</version>
+      <executions>
+      <execution>
+      <id>github-upload</id>
+      <phase>deploy</phase>
+      <goals>
+      <goal>release</goal>
+      </goals>
+      <inherited>false</inherited>
+      <configuration>
+      <releaseName>v${project.version}</releaseName>
+      <tag>v${project.version}</tag>
+      <artifact>${project.build.directory}/rpm/${project.artifactId}/RPMS/noarch/${project.artifactId}-${parsedVersion.majorVersion}.${parsedVersion.minorVersion}-ciop.noarch.rpm</artifact>
+      <overwriteArtifact>true</overwriteArtifact>
+      </configuration>
+      </execution>
+      </executions>
+      </plugin>
+
+
+
     </plugins>
   </build>
 </project>
