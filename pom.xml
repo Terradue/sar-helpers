@@ -1,33 +1,46 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-
-  <parent>
-    <groupId>com.terradue.air</groupId>
-    <artifactId>air</artifactId>
-    <version>0.1-SNAPSHOT</version>
-  </parent>
-
+  <groupId>com.terradue.ciop.app</groupId>
   <artifactId>sar-helpers</artifactId>
-  <packaging>rpm</packaging>
+  <packaging>pom</packaging>
+  <name>sar-helpers</name>
   <description>SAR helper functions</description>
-  <version>1.1-SNAPSHOT</version>
-
- <!-- <properties>
-    <redmine.projectID>cioppy</redmine.projectID>
-  </properties>-->
-
-  <dependencies>
-    
-  </dependencies>
-
-	<scm>
-	 <connection>scm:git:git@github.com:Terradue/sar-helpers</connection>
-	 <developerConnection>scm:git:git@github.com:Terradue/sar-helpers.git</developerConnection>
-	 <url>https://github.com/Terradue/sar-helpers</url>
-	 <tag>HEAD</tag>
-   </scm>>
-
+  <version>0.1-SNAPSHOT</version>
+  <scm>
+    <connection>scm:git:git@github.com:Terradue/sar-helpers</connection>
+    <developerConnection>scm:git:git@github.com:Terradue/sar-helpers.git</developerConnection>
+    <url>https://github.com/Terradue/sar-helpers</url>
+    <tag>HEAD</tag>
+  </scm>
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.build.resourceEncoding>UTF-8</project.build.resourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <maven.deploy.skip>true</maven.deploy.skip>
+    <github.global.server>github</github.global.server>
+    <github.site.repositoryName>sar-helpers</github.site.repositoryName>
+    <github.site.repositoryOwner>Terradue</github.site.repositoryOwner>
+  </properties>
+  <repositories>
+    <repository>
+      <id>repository.terradue.com</id>
+      <name>repository.terradue.com-releases</name>
+      <url>http://repository.terradue.com/artifactory/libs-release-public</url>
+      <releases>
+        <enabled>true</enabled>
+        <checksumPolicy>warn</checksumPolicy>
+      </releases>
+    </repository>
+  </repositories>
+  <pluginRepositories>
+    <pluginRepository>
+      <snapshots/>
+      <id>repository.terradue.com</id>
+      <name>repository.terradue.com-releases</name>
+      <url>http://repository.terradue.com/artifactory/libs-release-public</url>
+    </pluginRepository>
+  </pluginRepositories>
   <build>
     <plugins>
       <plugin>
@@ -39,22 +52,22 @@
         <artifactId>maven-assembly-plugin</artifactId>
         <version>2.4</version>
         <executions>
-<!--          <execution> -->
-<!--            <id>rpm</id> this is used for inheritance merges -->
-<!--            <phase>prepare-package</phase> bind to the packaging phase -->
-<!--            <goals> -->
-<!--              <goal>single</goal> -->
-<!--            </goals> -->
-<!--            <configuration> -->
-<!--              <attach>false</attach> -->
-<!--              <descriptors> -->
-<!--                <descriptor>${basedir}/src/main/assembly/rpm.xml</descriptor> -->
-<!--              </descriptors> -->
-<!--              <outputDirectory>${project.build.directory}/dependencies</outputDirectory> -->
-<!--              <appendAssemblyId>false</appendAssemblyId> -->
-<!--              <finalName>/</finalName> -->
-<!--            </configuration> -->
-<!--          </execution> -->
+          <!--          <execution> -->
+          <!--            <id>rpm</id> this is used for inheritance merges -->
+          <!--            <phase>prepare-package</phase> bind to the packaging phase -->
+          <!--            <goals> -->
+          <!--              <goal>single</goal> -->
+          <!--            </goals> -->
+          <!--            <configuration> -->
+          <!--              <attach>false</attach> -->
+          <!--              <descriptors> -->
+          <!--                <descriptor>${basedir}/src/main/assembly/rpm.xml</descriptor> -->
+          <!--              </descriptors> -->
+          <!--              <outputDirectory>${project.build.directory}/dependencies</outputDirectory> -->
+          <!--              <appendAssemblyId>false</appendAssemblyId> -->
+          <!--              <finalName>/</finalName> -->
+          <!--            </configuration> -->
+          <!--          </execution> -->
         </executions>
       </plugin>
       <plugin>
@@ -71,17 +84,16 @@
           <defaultDirmode>755</defaultDirmode>
           <defaultFilemode>644</defaultFilemode>
           <mappings>
-          
-			<mapping>
-			<directoryIncluded>true</directoryIncluded>
-			<directory>/opt/sar-helpers</directory>
-			<sources>
-			<source>
-			<location>${basedir}/src/main/resources</location>
-			</source>
-			</sources>
-			</mapping>
-           </mappings>
+            <mapping>
+              <directoryIncluded>true</directoryIncluded>
+              <directory>/opt/sar-helpers</directory>
+              <sources>
+                <source>
+                  <location>${basedir}/src/main/resources</location>
+                </source>
+              </sources>
+            </mapping>
+          </mappings>
           <provides>
             <provide>${project.artifactId}</provide>
           </provides>
@@ -98,12 +110,6 @@
           </postinstallScriptlet>-->
         </configuration>
       </plugin>
-      <plugin>
-        <groupId>com.terradue</groupId>
-        <artifactId>rpmdeploy-maven-plugin</artifactId>
-      </plugin>
     </plugins>
   </build>
-
 </project>
-
