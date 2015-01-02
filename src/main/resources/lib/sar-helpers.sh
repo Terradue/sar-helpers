@@ -3,7 +3,12 @@
 get_MIMEtype() {
   
   local file=$1
-  file -bi $file || return $?
+  out=`file -bi $file | cut -d ";" -f1`
+  echo a ${PIPESTATUS[0]}
+  echo b ${PIPESTATUS[1]}
+  echo c ${PIPESTATUS[*]} 
+  [[ ${PIPESTATUS[0]} != 0 ]] || [[ ${PIPESTATUS[1]} != 0 ]] && return 1
+  echo $out
 
 } 
 
