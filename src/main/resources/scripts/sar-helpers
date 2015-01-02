@@ -1,2 +1,31 @@
 #!/bin/bash
 
+get_MIMEtype() {
+  
+  local file=$1
+  file -bi $file || return $?
+
+} 
+
+#GetSensingDate
+
+#GetArchiveContent
+
+#GetCEOSSensingDate
+
+#GetEnvisatSensingDate
+
+#GetCSKSensingDate
+
+#GetTSXSensingDate
+
+#GetRadarsatSensingDate
+
+#GetSentinel1SensingDate
+
+#CreateAdoreEnv
+
+#CreateGMTSAREnv
+
+#CreateROIPACEnv
+
