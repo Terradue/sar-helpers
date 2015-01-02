@@ -13,7 +13,12 @@ get_MIMEtype() {
 
 #GetCEOSSensingDate
 
-#GetEnvisatSensingDate
+get_Envisat_sensing_date() {
+  local dataset="$1"
+  res=`sed -b -n "10,10p" $dataset | cut -b 16-26 | xargs -I {} date -d {} +%Y%m%d`
+  
+  echo $res
+}
 
 #GetCSKSensingDate
 
