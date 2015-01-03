@@ -1,6 +1,6 @@
 #sar-helpers
 
-*sar-helpers* are a set of bash function to ease the extration of information out of SAR data.
+*sar-helpers* are a set of bash function to ease the extraction of information out of SAR data.
 
 ## Motivation
 
