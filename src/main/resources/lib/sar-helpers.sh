@@ -2,6 +2,15 @@
 
 # /*!
 #     This is a comment about FunctionName.
+#
+#
+#     @throws foo_exception
+#
+#     @throws bar_exception
+#
+#     @namespace I/O Kit (this is just a string)
+#
+#     @updated 2003-03-15
 #  */
 __get_MIMEtype() {
   set -o pipefail 
@@ -13,6 +22,19 @@ __get_MIMEtype() {
 
 #GetSensingDate
 
+# /*!
+#     This is a comment about FunctionName.
+#
+#     @discussion this is the discussion
+#
+#     @throws foo_exception
+#
+#     @throws bar_exception
+#
+#     @namespace I/O Kit (this is just a string)
+#
+#     @updated 2003-03-15
+#  */
 __get_archive_content() {
   local dataset="$1"
   local mimetype=`__get_MIMEtype $dataset`

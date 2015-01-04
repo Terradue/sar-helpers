@@ -85,7 +85,7 @@
               <outputDirectory>${project.build.directory}/sar-helpers</outputDirectory>
               <resources>
                 <resource>
-                  <directory>${basedir}/src/main/resources</directory>
+                  <directory>${basedir}/src/main/resources/lib</directory>
                 </resource>
               </resources>
             </configuration>
@@ -121,29 +121,10 @@
             <provide>${project.artifactId}</provide>
           </provides>
           <requires>
-            <require>libxml2-python</require>
-            <require>libxml2-devel</require>
-            <require>gdal-python</require>
-            <require>python-setuptools</require>
+            <require>asf_mapready</require>
           </requires>
           <needarch>noarch</needarch>
-          <!-- <postinstallScriptlet>
-            <scriptFile>${project.basedir}/src/main/scripts/install.sh</scriptFile>
-            <fileEncoding>utf-8</fileEncoding>
-          </postinstallScriptlet>-->
         </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-release-plugin</artifactId>
-        <version>2.5</version>
-        <dependencies>
-          <dependency>
-            <groupId>org.apache.maven.scm</groupId>
-            <artifactId>maven-scm-provider-gitexe</artifactId>
-            <version>1.9</version>
-          </dependency>
-        </dependencies>
       </plugin>
       <plugin>
         <groupId>de.jutzig</groupId>
@@ -165,6 +146,108 @@
             </configuration>
           </execution>
         </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <version>1.6</version>
+        <executions>
+          <execution>
+            <id>create target</id>
+            <phase>initialize</phase>
+            <configuration>
+              <target>
+                <mkdir dir="${project.build.directory}/doc"/>
+              </target>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <version>1.3.1</version>
+        <executions>
+          <execution>
+            <id>headerdoc2html</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+            <configuration>
+              <executable>headerdoc2html</executable>
+              <workingDirectory>${basedir}/src/main/resources/lib</workingDirectory>
+              <arguments>
+                <argument>-o</argument>
+                <argument>${project.build.directory}/doc</argument>
+                <argument>sar-helpers.sh</argument>
+              </arguments>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-release-plugin</artifactId>
+        <version>2.5</version>
+        <dependencies>
+          <dependency>
+            <groupId>org.apache.maven.scm</groupId>
+            <artifactId>maven-scm-provider-gitexe</artifactId>
+            <version>1.9</version>
+          </dependency>
+        </dependencies>
+      </plugin>
+      <plugin>
+        <groupId>com.github.github</groupId>
+        <artifactId>site-maven-plugin</artifactId>
+        <version>0.8</version>
+        <configuration>
+          <message>Creating site for ${project.version}</message>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>site</goal>
+            </goals>
+            <phase>site-deploy</phase>
+            <configuration>
+              <outputDirectory>${project.build.directory}/doc/sar-helpers_sh</outputDirectory>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>com.github.github</groupId>
+        <artifactId>site-maven-plugin</artifactId>
+        <version>0.10</version>
+        <configuration>
+          <message>Creating site for ${project.version}</message>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>site</goal>
+            </goals>
+            <phase>site-deploy</phase>
+            <configuration>
+              <outputDirectory>${project.build.directory}/doc/sar-helpers_sh</outputDirectory>
+              <noJekyll>true</noJekyll>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-site-plugin</artifactId>
+        <version>3.0</version>
+        <configuration>
+          <skip>true</skip>
+          <skipDeploy>true</skipDeploy>
+        </configuration>
       </plugin>
     </plugins>
   </build>
