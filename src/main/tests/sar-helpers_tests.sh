@@ -53,7 +53,7 @@ testASAsensingdate() {
   "20120329" "$out"
 }
 
-testASAtarsensingdate() {
+testASAsensingdatetar() {
   out=`__get_ASAR_sensing_date $_ROOT/artifacts/ASA_IM__0CNPDE20120329_071134_000000163113_00121_52721_6279.N1.tar`
   assertEquals "Failed to retrieve Envisat ASAR sensing date" \
   "20120329" "$out"
@@ -62,6 +62,24 @@ testASAtarsensingdate() {
 testASAsensingdatezip() {
   out=`__get_ASAR_sensing_date $_ROOT/artifacts/ASA_IM__0CNPDE20120329_071134_000000163113_00121_52721_6279.N1.zip`
   assertEquals "Failed to retrieve Envisat ASAR sensing date" \
+  "20120329" "$out"
+}
+
+testASAsensingdategzip() {
+  out=`__get_ASAR_sensing_date $_ROOT/artifacts/ASA_IM__0CNPDE20120329_071134_000000163113_00121_52721_6279.N1.gz`
+  assertEquals "Failed to retrieve Envisat ASAR sensing date in gz" \
+  "20120329" "$out"
+}
+
+testASAsensingdatetargz() {
+  out=`__get_ASAR_sensing_date $_ROOT/artifacts/ASA_IM__0CNPDE20120329_071134_000000163113_00121_52721_6279.N1.tar.gz`
+  assertEquals "Failed to retrieve Envisat ASAR sensing date in tar.gz" \
+  "20120329" "$out"
+}
+
+testASAsensingdatetgz() {
+  out=`__get_ASAR_sensing_date $_ROOT/artifacts/ASA_IM__0CNPDE20120329_071134_000000163113_00121_52721_6279.N1.tgz`
+  assertEquals "Failed to retrieve Envisat ASAR sensing date in tgz" \
   "20120329" "$out"
 }
 
@@ -98,9 +116,15 @@ testContenttargz() {
 }
 
 
-testERSCEOSlowcasesensingdate() {
+testERSCEOSlowcasesensingdatetar() {
   out=`__get_ERSCEOS_sensing_date $_ROOT/artifacts/ER01_SAR_RAW_0P_20000217T095726_20000217T095743_44928.CEOS_low_case.tar`
   assertEquals "Failed to ERS CEOS tar low case sensing date" \
+  "20000217" "$out"
+}
+
+testERSCEOSlowcasesensingdatetargz() {
+  out=`__get_ERSCEOS_sensing_date $_ROOT/artifacts/ER01_SAR_RAW_0P_20000217T095726_20000217T095743_44928.CEOS_low_case.tar.gz`
+  assertEquals "Failed to ERS CEOS tar low case sensing date in tar.gz" \
   "20000217" "$out"
 }
 
