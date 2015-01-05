@@ -99,76 +99,88 @@ __get_ASAR_sensing_date() {
   echo $sensingdate
 }
 
-__get_ERSCEOS_sensing_date() {
+__get_ERSCEOS_field() {
   local dataset="$1"
+  local field="$2"
   set -o pipefail
-  set +x
-  
+
   local mimetype=`__get_MIMEtype $dataset`
   local lea=`__get_archive_content $dataset | tr " " "\n" | grep --ignore-case lea_01.001`
   local tmpdir=/tmp/.`uuidgen`
-  mkdir -p $tmpdir
+  local tmplea=$tmpdir/lea_01.001
 
+  mkdir -p $tmpdir
+  
   case $mimetype in
     "application/x-tar")
-      tar -xOf $dataset $lea > $tmpdir/lea_01.001   
+      tar -xOf $dataset $lea > $tmplea
       res=$?
       ;;
     "application/x-gzip")
-      tar -xzOf $dataset $lea > $tmpdir/lea_01.001
+      tar -xzOf $dataset $lea > $tmplea
       res=$?
       ;;
   esac
-  
-  sensingdate=`metadata -dssr $tmpdir/lea_01.001 | grep "Zero-Doppler azimuth time center pixel"  | cut -c 40-63 | xargs -I {} date --date="{}" +"%Y%m%d"`
+
+  metadatavalue=`metadata -dssr $tmplea | grep "$field"`
   res=`echo $res + $? | bc`
+  
   rm -fr $tmpdir
+  [ $res != 0 ] && return 1
+  echo $metadatavalue
+
+}
+
+
+__get_ERSCEOS_sensing_date() {
+  local dataset="$1"
+  local field='Zero-Doppler azimuth time center pixel'
+
+  set -o pipefail
+  
+  sensingdate=`__get_ERSCEOS_field $dataset "$field" | cut -c 40-63 | xargs -I {} date --date="{}" +"%Y%m%d"`
+  res=$?
   [ $res != 0 ] && return 1
   echo $sensingdate
 }
 
 __get_ERSCEOS_mission() {
   local dataset="$1"
+  local field='MISSION ID'
+
   set -o pipefail
-  local mimetype=`__get_MIMEtype $dataset`
-  case $mimetype in
-    "application/x-tar")
-      lea=`__get_archive_content $dataset | tr " " "\n" | grep --ignore-case lea_01.001`
-      tmpdir=/tmp/.`uuidgen`
-      mkdir -p $tmpdir
-      tar -xOf $dataset $lea > $tmpdir/lea_01.001
-      mission=`metadata -dssr $tmpdir/lea_01.001 | grep "MISSION ID" | sed 's/MISSION ID//' | tr -d "\t "`
-      res=$?
-      rm -fr $tmpdir
-      ;;
-  esac
+
+  mission=`__get_ERSCEOS_field $dataset "$field" | sed 's/MISSION ID//' | tr -d "\t "`
+  res=$?
 
   [ $res != 0 ] && return 1
   echo $mission
 }
 
 __get_ERSCEOS_cycle() {
-    local dataset="$1"
+  local dataset="$1"
+  local field="SCENE DESIGNATOR" 
+ 
   set -o pipefail
-  local mimetype=`__get_MIMEtype $dataset`
-  case $mimetype in
-    "application/x-tar")
-      lea=`__get_archive_content $dataset | tr " " "\n" | grep --ignore-case lea_01.001`
-      tmpdir=/tmp/.`uuidgen`
-      mkdir -p $tmpdir
-      tar -xOf $dataset $lea > $tmpdir/lea_01.001
-      mission=`metadata -dssr $tmpdir/lea_01.001 | grep "MISSION ID" | sed 's/MISSION ID//' | tr -d "\t "`
+  # TODO extract absolute orbit
+  local absorbit=`__get_ERSCEOS_field $dataset "$field"`
+ 
+  # check mission
+  local mission=`__get_ERSCEOS_mission $dataset`
+
+  case $mission in
+    "ERS1")
+      cycle=`__get_ERS1_cycle $dataset`
       res=$?
-      if [ $mission == ERS1 ]; then
-        cycle=`__get_ERS1_cycle $tmpdir/lea_01.001`
-      fi
-      rm -fr $tmpdir
+      ;;
+    "ERS2")
+      cycle=`__get_ERS2_cycle $dataset`
+      res=$?
       ;;
   esac
 
   [ $res != 0 ] && return 1
-  echo $mission
-
+  echo $cycle
 
 }
 
