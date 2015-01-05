@@ -53,18 +53,50 @@ testASAsensingdate() {
   "20120329" "$out"
 }
 
+testASAtarsensingdate() {
+  out=`__get_ASAR_sensing_date $_ROOT/artifacts/ASA_IM__0CNPDE20120329_071134_000000163113_00121_52721_6279.N1.tar`
+  assertEquals "Failed to retrieve Envisat ASAR sensing date" \
+  "20120329" "$out"
+}
+
 testASAsensingdatezip() {
   out=`__get_ASAR_sensing_date $_ROOT/artifacts/ASA_IM__0CNPDE20120329_071134_000000163113_00121_52721_6279.N1.zip`
   assertEquals "Failed to retrieve Envisat ASAR sensing date" \
   "20120329" "$out"
 }
 
+# __get_archive_content
 testERSCEOSlowcase() {
   out=`__get_archive_content $_ROOT/artifacts/ER01_SAR_RAW_0P_20000217T095726_20000217T095743_44928.CEOS_low_case.tar`
   assertEquals "Failed to retrieve ERS CEOS tar content" \
   "pablo/ pablo/TEMP_DN/ pablo/TEMP_DN/TMP_MARINA/ pablo/TEMP_DN/TMP_MARINA/TERRAFIRMA/ pablo/TEMP_DN/TMP_MARINA/TERRAFIRMA/TMP/ pablo/TEMP_DN/TMP_MARINA/TERRAFIRMA/TMP/dat_01.001 pablo/TEMP_DN/TMP_MARINA/TERRAFIRMA/TMP/lea_01.001 pablo/TEMP_DN/TMP_MARINA/TERRAFIRMA/TMP/nul_dat.001 pablo/TEMP_DN/TMP_MARINA/TERRAFIRMA/TMP/vdf_dat.001" "$out"
   
 }
+
+testContentZip() {
+  out=`__get_archive_content $_ROOT/artifacts/ASA_IM__0CNPDE20120329_071134_000000163113_00121_52721_6279.N1.zip`
+  assertEquals "Failed to retrieve ASAR zip archive content" \
+  "ASA_IM__0CNPDE20120329_071134_000000163113_00121_52721_6279.N1" "$out"
+}
+
+testContentgz() {
+  out=`__get_archive_content $_ROOT/artifacts/ASA_IM__0CNPDE20120329_071134_000000163113_00121_52721_6279.N1.gz`
+  assertEquals "Failed to retrieve ASAR gzip archive content" \
+  "ASA_IM__0CNPDE20120329_071134_000000163113_00121_52721_6279.N1" "$out"
+}
+
+testContenttgz() {
+  out=`__get_archive_content $_ROOT/artifacts/ASA_IM__0CNPDE20120329_071134_000000163113_00121_52721_6279.N1.tgz`
+  assertEquals "Failed to retrieve ASAR tgz archive content" \
+  "ASA_IM__0CNPDE20120329_071134_000000163113_00121_52721_6279.N1" "$out"
+}
+
+testContenttargz() {
+  out=`__get_archive_content $_ROOT/artifacts/ASA_IM__0CNPDE20120329_071134_000000163113_00121_52721_6279.N1.tar.gz`
+  assertEquals "Failed to retrieve ASAR tar.gz archive content" \
+  "ASA_IM__0CNPDE20120329_071134_000000163113_00121_52721_6279.N1" "$out"
+}
+
 
 testERSCEOSlowcasesensingdate() {
   out=`__get_ERSCEOS_sensing_date $_ROOT/artifacts/ER01_SAR_RAW_0P_20000217T095726_20000217T095743_44928.CEOS_low_case.tar`
