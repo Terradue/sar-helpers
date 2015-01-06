@@ -157,14 +157,63 @@ __get_ERSCEOS_mission() {
   echo $mission
 }
 
+__get_ERSCEOS_absorbit() {
+  local dataset="$1"
+  local field="SCENE DESIGNATOR"
+
+  local absorbit=`__get_ERSCEOS_field $dataset "$field" | cut -d "=" -f 2 | cut -d "-" -f 1`
+  res=$?
+
+  [ $res != 0 ] && return 1
+  echo $absorbit
+}
+
+
+__get_ERS1_cycle() {
+  local dataset="$1"
+  
+  local absorbit=`__get_ERSCEOS_absorbit $dataset`
+  res=$?
+
+  [ $res != 0 ] && return 1
+
+  if [ $absorbit -ge 126 -a $absorbit -le 2103 ]; then
+    cycle=$(( (absorbit + 3698)/43 ))
+  elif [ $absorbit -ge 2354 -a $absorbit -le 3695 ]; then
+    cycle=$(( (absorbit + 2334)/43 ))
+  elif [ $absorbit -ge 3901 -a $absorbit -le 12707 ]; then
+    cycle=$(( (absorbit + 3653)/501 ))
+  elif [ $absorbit -ge 12754 -a $absorbit -le 14300 ]; then
+    cycle=$(( (absorbit - 12728)/43 ))
+  elif [ $absorbit -ge 14302 -a $absorbit -le 16745 ]; then
+    cycle=$(( (absorbit - 12511)/2411 + 139 ))
+  elif [ $absorbit -ge 16747 -a $absorbit -le 19247 ]; then
+    cycle=$(( (absorbit - 14391)/2411 +141 ))
+  elif [ $absorbit -ge 19248 ]; then
+    cycle=$(( (absorbit - 19027)/501 + 144 ))
+  fi
+  
+  echo $cycle 
+}
+
+__get_ERS2_cycle() {
+  local dataset="$1"
+  # TODO return code impact cycle information
+  local absorbit=`__get_ERSCEOS_absorbit $dataset`
+  res=$?
+  [ $res != 0 ] && return 1
+
+  cycle=`echo "($absorbit + 145 ) / 501" | bc`  
+  res=$?
+  [ $res != 0 ] && return 2
+  echo $cycle
+}
+
 __get_ERSCEOS_cycle() {
   local dataset="$1"
-  local field="SCENE DESIGNATOR" 
  
   set -o pipefail
-  # TODO extract absolute orbit
-  local absorbit=`__get_ERSCEOS_field $dataset "$field"`
- 
+
   # check mission
   local mission=`__get_ERSCEOS_mission $dataset`
 
@@ -183,6 +232,49 @@ __get_ERSCEOS_cycle() {
   echo $cycle
 
 }
+
+__get_ERS1_track() {
+  local dataset="$1"
+
+  local absorbit=`__get_ERSCEOS_absorbit $dataset`
+  res=$?
+
+  [ $res != 0 ] && return 1
+
+  if [ $absorbit -ge 126 -a $absorbit -le 2103 ]; then
+    track=$(( (absorbit + 29 -126) % 43 ))
+  elif [ $absorbit -ge 2354 -a $absorbit -le 3695 ]; then
+    track=$(( (absorbit + 21 -2354) % 43 ))    
+  elif [ $absorbit -ge 3901 -a $absorbit -le 12707 ]; then
+    track=$(( (absorbit + 249 -3901) % 501 ))
+  elif [ $absorbit -ge 12754 -a $absorbit -le 14300 ]; then
+    track=$(( (absorbit + 27 -12754) % 43 ))
+  elif [ $absorbit -ge 14302 -a $absorbit -le 16745 ]; then
+    track=$(( (absorbit + 1792 -14302) % 2411 ))
+  elif [ $absorbit -ge 16747 -a $absorbit -le 19247 ]; then
+    track=$(( (absorbit + 2357 -16747) % 2411 ))
+  elif [ $absorbit -ge 19248 ]; then
+    track=$(( (absorbit + 222 -19248) % 501 ))
+  fi
+
+  echo $track
+}
+
+__get_ERS2_track() {
+  local dataset="$1"
+  # TODO return code impact track information
+  local absorbit=`__get_ERSCEOS_absorbit $dataset`
+  res=$?
+  [ $res != 0 ] && return 1
+  
+  cycle=`__get_ERS2_cycle $dataset`
+
+  track=`echo "$absorbit + 146 - $cycle * 501" | bc`
+  res=$?
+  [ $res != 0 ] && return 2
+  echo $track
+}
+
 
 # get_mission()
 

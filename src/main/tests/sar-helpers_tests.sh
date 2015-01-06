@@ -134,6 +134,23 @@ testERSCEOSlowcasemission() {
   "ERS1" "$out"
 }
 
+testERSCEOSlowcaseabsorbit() {
+  out=`__get_ERSCEOS_absorbit $_ROOT/artifacts/ER01_SAR_RAW_0P_20000217T095726_20000217T095743_44928.CEOS_low_case.tar` 
+  assertEquals "Failed to ERS CEOS tar low case absolute orbit" \
+  "44928" "$out"
+}
+
+testERSCEOSlowcasecycle() {
+  out=`__get_ERS1_cycle $_ROOT/artifacts/ER01_SAR_RAW_0P_20000217T095726_20000217T095743_44928.CEOS_low_case.tar`
+  assertEquals "Failed to ERS CEOS tar low case cycle" \
+  "195" "$out"
+}
+
+testERSCEOSlowcasetrack() {
+  out=`__get_ERS1_track $_ROOT/artifacts/ER01_SAR_RAW_0P_20000217T095726_20000217T095743_44928.CEOS_low_case.tar`
+  assertEquals "Failed to ERS CEOS tar low case track" \
+  "351" "$out"
+}
 
 setUp() {
   # load include to test
