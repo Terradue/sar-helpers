@@ -1,8 +1,7 @@
 #!/bin/bash
 
 # /*!
-#     __get_MIMEtype() is an internal function
-#     Its purpose is to find the mime type to allo invoking functions to handle correctly the input
+#     __get_MIMEtype() is an internal function to determine the mime type. Invoking functions can then handle the input properly
 #
 #     @param $1 path to input file
 #
@@ -18,8 +17,6 @@ __get_MIMEtype() {
   out=`echo $mime | cut -d ";" -f1`
   echo $out
 } 
-
-#GetSensingDate
 
 # /*!
 #     The function __get_archive_content() returns the content of an archive provided as argument
@@ -60,8 +57,16 @@ __get_archive_content() {
   echo $content
 }
 
-#GetCEOSSensingDate
 
+# /*!
+#      __get_ASAR_sensing_date() is an internal function to determine the mime type. Invoking functions can then handle the input properly
+#
+#      @param $1 path to input file
+#
+#      @return Echoes MIME type to stdout on success, 1 on failure.
+#
+#      @updated 2014-01-05
+#  */
 __get_ASAR_sensing_date() {
   local dataset="$1"
   set -o pipefail
