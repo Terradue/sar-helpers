@@ -157,18 +157,43 @@ __get_ERSCEOS_mission() {
   echo $mission
 }
 
+# /*!
+#     __get_ERSCEOS_absorbit() is an internal function that extracts the absolute orbit of ERS-1/2 data in CEOS format
+#     It uses metadata from ASF MapReady to read the LEA file 
+#
+#     @param $1 path to input file (in .tar, tar.gz or .tgz archive format)
+#
+#     @return Echoes the absolute orbit to stdout on success, -1 on failure.
+#
+#     @updated 2014-01-06
+#  */
 __get_ERSCEOS_absorbit() {
   local dataset="$1"
-  local field="SCENE DESIGNATOR"
 
-  local absorbit=`__get_ERSCEOS_field $dataset "$field" | cut -d "=" -f 2 | cut -d "-" -f 1`
-  res=$?
+  local field="ORBIT NUMBER"
+  local absorbit=`__get_ERSCEOS_field $dataset "$field" | sed 's/[^0-9]*//g'`
 
-  [ $res != 0 ] && return 1
+  [[ -z "absorbit" ]] && {
+    local field="SCENE DESIGNATOR"
+    local absorbit=`__get_ERSCEOS_field $dataset "$field" | cut -d "=" -f 2 | cut -d "-" -f 1`
+  }  
+
+  [[ -z "absorbit" ]] && return -1
+
   echo $absorbit
 }
 
 
+# /*!
+#     __get_ERSCEOS_cycle() is an internal function that extracts the absolute orbit of ERS-1/2 data in CEOS format
+#     It uses metadata from ASF MapReady to read the LEA file
+#
+#     @param $1 path to input file (in .tar, tar.gz or .tgz archive format)
+#
+#     @return Echoes the absolute orbit to stdout on success, -1 on failure.
+#
+#     @updated 2014-01-06
+#  */
 __get_ERS1_cycle() {
   local dataset="$1"
   
