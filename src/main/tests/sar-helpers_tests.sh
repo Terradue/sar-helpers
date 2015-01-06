@@ -152,6 +152,8 @@ testERSCEOSlowcasetrack() {
   "351" "$out"
 }
 
+# TODO add tests for ERS-2 in CEOS format
+
 setUp() {
   # load include to test
   export _ROOT=`dirname $0`
