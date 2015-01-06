@@ -67,7 +67,7 @@ __get_archive_content() {
 #
 #      @updated 2014-01-05
 #  */
-__get_ASAR_sensing_date() {
+__get_N1_sensing_date() {
   local dataset="$1"
   set -o pipefail
  
@@ -103,6 +103,87 @@ __get_ASAR_sensing_date() {
   [ $res != 0 ] && return 1
   echo $sensingdate
 }
+
+__get_ASAR_sensing_date() {
+  __get_N1_sensing_date $@
+}
+
+__get_ERSE1_sensing_date() {
+  __get_N1_sensing_date $@
+}
+
+__get_ERSE2_sensing_date() {
+  __get_N1_sensing_date $@
+}
+
+__is_N1E1E2() {
+  # NOTE will fail if zip has a folder structure
+  local dataset="$1"
+  local test="$2"
+  set -o pipefail
+
+  local mimetype=`__get_MIMEtype $dataset`
+
+  case $mimetype in
+    "application/x-tar")
+      [ `tar tf $dataset | wc -l` != 1 ] && return 1  
+      prefix=`tar -Oxf $dataset | sed -b '1q;d' | cut -b 10-18`
+      res=$?
+      ;;
+    "application/zip")
+      [ `zipinfo -1 $dataset | wc -l` != 1 ] && return 1
+      prefix=`zcat -f $dataset | sed -b "1q;d" | cut -b 10-18`
+      res=$?
+      ;;
+    "application/octet-stream")
+      prefix=`sed -b "1q;d" $dataset | cut -b 10-18`
+      res=$?
+      ;;
+    "application/x-gzip")
+      content=`zcat -lv $dataset | sed '2q;d' | awk '{ print $9 }'`
+      res=$?
+      if [[ "$content" =~ .*\.tar.* ]]; then
+        prefix=`tar -Oxf $dataset | sed '1q;d' | cut -b 10-18`
+        res=`echo $res + $? | bc`
+      else
+        prefix=`zcat $dataset | sed '1q;d' | cut -b 10-18`
+        res=`echo $res + $? | bc`
+      fi
+      ;;
+  esac
+
+  [ $res != 0 ] && return 1
+  [ $prefix == $test ] && return 0 || return 1
+}
+
+__is_ASAR() {
+  __is_N1E1E2 $@ "ASA_IM__0"
+  return $?
+}
+
+__is_SAR() {
+  __is_N1E1E2 $@ "SAR_IM__0"
+  return $?
+}
+
+__is_ERSCEOS() {
+  local dataset="$1"
+  set -o pipefail
+
+  content="`__get_archive_content $dataset | tr " " "\n"`"
+  res=$?
+  lea=`echo $content | grep --ignore-case lea_01.001 | wc -l`
+  res=`echo $res + $? | bc`
+  dat=`echo $content | grep --ignore-case dat_01.001 | wc -l`
+  res=`echo $res + $? | bc`
+  nul=`echo $content | grep --ignore-case nul_dat.001 | wc -l`
+  res=`echo $res + $? | bc`
+  vdf=`echo $content | grep --ignore-case vdf_dat.001 | wc -l`
+  res=`echo $res + $? | bc`
+  [ $res != 0 ] && return 1
+  [ $lea == 1 ] && [ $dat == 1 ] && [ $nul == 1 ] && [ $vdf == 1 ] && return 0  
+}
+
 
 __get_ERSCEOS_field() {
   local dataset="$1"
@@ -147,6 +228,45 @@ __get_ERSCEOS_sensing_date() {
   res=$?
   [ $res != 0 ] && return 1
   echo $sensingdate
+}
+
+__get_E1E2_mission() {
+  # NOTE will fail if zip has a folder structure
+  local dataset="$1"
+  set -o pipefail
+
+  local mimetype=`__get_MIMEtype $dataset`
+
+  case $mimetype in
+    "application/x-tar")
+      [ `tar tf $dataset | wc -l` != 1 ] && return 1
+      E1=`tar -Oxf $dataset | sed -b '1q;d' | grep ".E1" | wc -l`
+      E2=`tar -Oxf $dataset | sed -b '1q;d' | grep ".E2" | wc -l`
+      ;;
+    "application/zip")
+      [ `zipinfo -1 $dataset | wc -l` != 1 ] && return 1
+      E1=`zcat -f $dataset | sed -b "1q;d" | grep ".E1" | wc -l`
+      E2=`zcat -f $dataset | sed -b "1q;d" | grep ".E2" | wc -l`
+      ;;
+    "application/octet-stream")
+      E1=`sed -b "1q;d" $dataset | grep ".E1" | wc -l`
+      E2=`sed -b "1q;d" $dataset | grep ".E2" | wc -l`
+      ;;
+    "application/x-gzip")
+      content=`zcat -lv $dataset | sed '2q;d' | awk '{ print $9 }'`
+      if [[ "$content" =~ .*\.tar.* ]]; then
+        E1=`tar -Oxf $dataset | sed '1q;d' | grep ".E1" | wc -l`
+        E2=`tar -Oxf $dataset | sed '1q;d' | grep ".E2" | wc -l`
+      else
+        E1=`zcat $dataset | sed '1q;d' | grep ".E1" | wc -l`
+        E2=`zcat $dataset | sed '1q;d' | grep ".E2" | wc -l`
+      fi
+      ;;
+  esac
+
+  [ $E1 == 1 ] && { echo "ERS1"; return 0; }
+  [ $E2 == 1 ] && { echo "ERS2"; return 0; }
+  return 1
 }
 
 __get_ERSCEOS_mission() {
@@ -305,10 +425,70 @@ __get_ERS2_track() {
   echo $track
 }
 
+__detect_dataset() {
+  local dataset="$1"
 
-# get_mission()
+  __is_SAR $dataset &> /dev/null
+  [ $? = 0 ] && { 
+    mission=`__get_E1E2_mission $dataset`
+    echo "${mission}-SAR"
+    return 0
+  }
 
-# get_sensing_date()
+  __is_ASAR $dataset &> /dev/null
+  [ $? = 0 ] && {
+    echo "ASAR" 
+    return 0
+  }
+
+  __is_ERSCEOS $dataset &> /dev/null
+  [ $? = 0 ] && {
+    mission=`__get_ERSCEOS_mission $dataset`
+    echo "${mission}-CEOS"
+    return 0
+  }
+  return 1
+}
+
+get_mission() {
+  __detect_dataset $@
+}
+
+get_sensing_date() {
+  local dataset="$1"
+  mission=`get_mission $dataset`
+  
+  [ $? != 0 ] && return 1
+
+  case $mission in
+    "ERS1-CEOS")
+      sensingdate=`__get_ERSCEOS_sensing_date $dataset`
+      res=$?
+      ;;
+    "ERS2-CEOS")
+      sensingdate=`__get_ERSCEOS_sensing_date $dataset`
+      res=$?
+      ;;
+    "ASAR")
+      sensingdate=`__get_ASAR_sensing_date $dataset`
+      res=$?
+      ;;
+    "ERS1-SAR")
+      sensingdate=`__get_ERSE1_sensing_date $dataset`
+      res=$?
+      ;;
+    "ERS2-SAR")
+      sensingdate=`__get_ERSE2_sensing_date $dataset`
+      res=$?
+      ;;
+    *)
+      return 1
+      ;;
+  esac
+
+  [ $res == 0 ] && echo $sensingdate || return 1
+}
+
 
 # get_cycle()
 
