@@ -504,7 +504,58 @@ get_sensing_date() {
 
 # create_env_adore()
 
-# create_env_gmtsar()
+__link_ASAR_gmtsar() {
+  # TODD add unit test
+  local dataset="$1"
+  local target="$2"
+  local mimetype=`__get_MIMEtype $dataset`
+  
+  mkdir -p $target
+
+  case $mimetype in
+    "application/x-tar")
+     set -x 
+      tar -Oxf $dataset > $target/`basename $dataset | sed 's/\.tar//'`.baq
+      res=$?
+      ;;
+    "application/octet-stream")
+      dataset_folder=$( cd "$( dirname $dataset )" && pwd )
+      ln -s $dataset_folder/`basename $dataset` $target/`basename $dataset`.baq
+      res=$?
+      cd - &> /dev/null
+      ;;
+      # TODO handle other mime types
+  esac
+ 
+  return $res
+}
+
+create_env_gmtsar() {
+  local master="$1"
+  local slave="$2"
+  local target="$3"
+
+  mission=`get_mission $master`
+
+  mkdir -p $target/raw
+  [ $? != 0 ] && return 1
+
+  # TODO add check on mission_slave != mission_master (deal with tandem)
+  for sar in $master $slave  
+  do 
+    case $mission in
+      "ASAR")
+      __link_ASAR_gmtsar $sar $target/raw
+      res=$?
+      ;;
+    *)
+      return 1
+      ;;
+    esac    
+  done
+  
+  return $?
+}
 
 # create_env_roipac()
 
