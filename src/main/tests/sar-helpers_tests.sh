@@ -363,10 +363,33 @@ testGetSensingdate_ERS1E1() {
   "19960627" "$out"
 }
 
+#
+#
+# GMTSAR
+#
+#
+testLinkASAR_gmtsar() {
+  mkdir -p $_TEST/raw
+  out=`__link_ASAR_gmtsar $_ROOT/artifacts/ASA_IM__0CNPDE20120329_071134_000000163113_00121_52721_6279.N1 $_TEST/raw`
+  res=$? 
+  assertEquals "link ASAR GMTSAR failed" \
+  "0" "$res"
+}
+
+testLinkASAR_gmtsar_tar() {
+  mkdir -p $_TEST/raw
+  out=`__link_ASAR_gmtsar $_ROOT/artifacts/ASA_IM__0CNPDE20120329_071134_000000163113_00121_52721_6279.N1.tar $_TEST/raw`
+  res=$?
+  assertEquals "link ASAR tar GMTSAR failed" \
+  "0" "$res"
+}
+
 setUp() {
   # load include to test
   export _ROOT=`dirname $0`
   . $_ROOT/../resources/lib/sar-helpers.sh
+  mkdir -p $_ROOT/runtime
+  export _TEST=$_ROOT/runtime
 }
 
 # load shunit2
