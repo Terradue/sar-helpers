@@ -393,4 +393,4 @@ setUp() {
 }
 
 # load shunit2
-. $SHUNIT2_HOME/src/shunit2
+. $SHUNIT2_HOME/shunit2

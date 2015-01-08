@@ -12,9 +12,9 @@
 __get_MIMEtype() {
   set -o pipefail 
   local file=$1
-  mime=`file -bi $file`
-  [[ $mime == *"(No such file or directory)"* ]] && return 1
-  out=`echo $mime | cut -d ";" -f1`
+  [[ ! -e "$1" ]] && return 1
+  mime=$( file -bi $file )
+  out=$( echo $mime | cut -d ";" -f1 )
   echo $out
 } 
 
@@ -25,11 +25,11 @@ __get_MIMEtype() {
 #  */
 __get_archive_content() {
   local dataset="$1"
-  local mimetype=`__get_MIMEtype $dataset`
- set +x 
+  local mimetype=$( __get_MIMEtype $dataset )
+  set +x 
   case $mimetype in
     "application/x-tar")
-      content=`tar tf $dataset`
+      content=$( tar tf $dataset )
       res=$?
       ;;
     "application/octet-stream")
@@ -37,18 +37,18 @@ __get_archive_content() {
       res=$?
       ;;
     "application/zip")
-      content=`zipinfo -1 $dataset`
+      content=$( zipinfo -1 $dataset )
       res=$?
       ;;
     "application/x-gzip")
-      content=`zcat -lv $dataset | sed '2q;d' | awk '{ print $9 }'`
+      content=$( zcat -lv $dataset | sed '2q;d' | awk '{ print $9 }' )
       res=$?
       if [[ "$content" =~ .*\.tar.* ]]; then
-        content=`tar tfz $dataset`
-        res=`echo $res + $? | bc`
+        content=$( tar tfz $dataset )
+        res=$( echo $res + $? | bc )
       else
-        content=${content#`dirname $content`\/}
-        res=`echo $res + $? | bc`
+        content=${content#$( dirname $content )\/}
+        res=$( echo $res + $? | bc )
       fi
       ;;
   esac
@@ -71,31 +71,31 @@ __get_N1_sensing_date() {
   local dataset="$1"
   set -o pipefail
  
-  local mimetype=`__get_MIMEtype $dataset`
+  local mimetype=$( __get_MIMEtype $dataset )
 
   case $mimetype in
     "application/x-tar")
-      sensingdate=`tar -Oxf $dataset | sed '10q;d' | cut -b 16-26 | xargs -I {} date -d {} +%Y%m%d`
+      sensingdate=$( tar -Oxf $dataset | sed '10q;d' | cut -b 16-26 | xargs -I {} date -d {} +%Y%m%d )
       res=$?
       ;;
     "application/zip")
-      sensingdate=`zcat -f $dataset | sed -b -n "10,10p" | cut -b 16-26 | xargs -I {} date -d {} +%Y%m%d` 
+      sensingdate=$( zcat -f $dataset | sed -b -n "10,10p" | cut -b 16-26 | xargs -I {} date -d {} +%Y%m%d ) 
       res=$?
       ;;
     "application/octet-stream")
       # TODO check if it's a ASA_IM__0
-      sensingdate=`sed -b -n "10,10p" $dataset | cut -b 16-26 | xargs -I {} date -d {} +%Y%m%d`
+      sensingdate=$( sed -b -n "10,10p" $dataset | cut -b 16-26 | xargs -I {} date -d {} +%Y%m%d )
       res=$?
       ;;
     "application/x-gzip")
-      content=`zcat -lv $dataset | sed '2q;d' | awk '{ print $9 }'`
+      content=$( zcat -lv $dataset | sed '2q;d' | awk '{ print $9 }' )
       res=$?
       if [[ "$content" =~ .*\.tar.* ]]; then
-        sensingdate=`tar -Oxf $dataset | sed '10q;d' | cut -b 16-26 | xargs -I {} date -d {} +%Y%m%d`
-        res=`echo $res + $? | bc`
+        sensingdate=$( tar -Oxf $dataset | sed '10q;d' | cut -b 16-26 | xargs -I {} date -d {} +%Y%m%d )
+        res=$( echo $res + $? | bc )
       else
-        sensingdate=`zcat $dataset | sed '10q;d' | cut -b 16-26 | xargs -I {} date -d {} +%Y%m%d`
-        res=`echo $res + $? | bc`
+        sensingdate=$( zcat $dataset | sed '10q;d' | cut -b 16-26 | xargs -I {} date -d {} +%Y%m%d )
+        res=$( echo $res + $? | bc )
       fi
       ;;
   esac
@@ -122,32 +122,32 @@ __is_N1E1E2() {
   local test="$2"
   set -o pipefail
 
-  local mimetype=`__get_MIMEtype $dataset`
+  local mimetype=$( __get_MIMEtype $dataset )
 
   case $mimetype in
     "application/x-tar")
-      [ `tar tf $dataset | wc -l` != 1 ] && return 1  
-      prefix=`tar -Oxf $dataset | sed -b '1q;d' | cut -b 10-18`
+      [ $( tar tf $dataset | wc -l ) != 1 ] && return 1  
+      prefix=$( tar -Oxf $dataset | sed -b '1q;d' | cut -b 10-18 )
       res=$?
       ;;
     "application/zip")
-      [ `zipinfo -1 $dataset | wc -l` != 1 ] && return 1
-      prefix=`zcat -f $dataset | sed -b "1q;d" | cut -b 10-18`
+      [ $( zipinfo -1 $dataset | wc -l ) != 1 ] && return 1
+      prefix=$( zcat -f $dataset | sed -b "1q;d" | cut -b 10-18 )
       res=$?
       ;;
     "application/octet-stream")
-      prefix=`sed -b "1q;d" $dataset | cut -b 10-18`
+      prefix=$( sed -b "1q;d" $dataset | cut -b 10-18 )
       res=$?
       ;;
     "application/x-gzip")
-      content=`zcat -lv $dataset | sed '2q;d' | awk '{ print $9 }'`
+      content=$( zcat -lv $dataset | sed '2q;d' | awk '{ print $9 }' )
       res=$?
       if [[ "$content" =~ .*\.tar.* ]]; then
-        prefix=`tar -Oxf $dataset | sed '1q;d' | cut -b 10-18`
-        res=`echo $res + $? | bc`
+        prefix=$( tar -Oxf $dataset | sed '1q;d' | cut -b 10-18 )
+        res=$( echo $res + $? | bc )
       else
-        prefix=`zcat $dataset | sed '1q;d' | cut -b 10-18`
-        res=`echo $res + $? | bc`
+        prefix=$( zcat $dataset | sed '1q;d' | cut -b 10-18 )
+        res=$( echo $res + $? | bc )
       fi
       ;;
   esac
@@ -170,16 +170,16 @@ __is_ERSCEOS() {
   local dataset="$1"
   set -o pipefail
 
-  content="`__get_archive_content $dataset | tr " " "\n"`"
+  content="$( __get_archive_content $dataset | tr " " "\n" )"
   res=$?
-  lea=`echo $content | grep --ignore-case lea_01.001 | wc -l`
-  res=`echo $res + $? | bc`
-  dat=`echo $content | grep --ignore-case dat_01.001 | wc -l`
-  res=`echo $res + $? | bc`
-  nul=`echo $content | grep --ignore-case nul_dat.001 | wc -l`
-  res=`echo $res + $? | bc`
-  vdf=`echo $content | grep --ignore-case vdf_dat.001 | wc -l`
-  res=`echo $res + $? | bc`
+  lea=$( echo $content | grep --ignore-case lea_01.001 | wc -l )
+  res=$( echo $res + $? | bc )
+  dat=$( echo $content | grep --ignore-case dat_01.001 | wc -l )
+  res=$( echo $res + $? | bc )
+  nul=$( echo $content | grep --ignore-case nul_dat.001 | wc -l )
+  res=$( echo $res + $? | bc )
+  vdf=$( echo $content | grep --ignore-case vdf_dat.001 | wc -l )
+  res=$( echo $res + $? | bc )
   [ $res != 0 ] && return 1
   [ $lea == 1 ] && [ $dat == 1 ] && [ $nul == 1 ] && [ $vdf == 1 ] && return 0  
 }
@@ -190,9 +190,9 @@ __get_ERSCEOS_field() {
   local field="$2"
   set -o pipefail
 
-  local mimetype=`__get_MIMEtype $dataset`
-  local lea=`__get_archive_content $dataset | tr " " "\n" | grep --ignore-case lea_01.001`
-  local tmpdir=/tmp/.`uuidgen`
+  local mimetype=$( __get_MIMEtype $dataset )
+  local lea=$( __get_archive_content $dataset | tr " " "\n" | grep --ignore-case lea_01.001 )
+  local tmpdir=/tmp/.$( uuidgen )
   local tmplea=$tmpdir/lea_01.001
 
   mkdir -p $tmpdir
@@ -208,8 +208,8 @@ __get_ERSCEOS_field() {
       ;;
   esac
 
-  metadatavalue=`metadata -dssr $tmplea | grep "$field"`
-  res=`echo $res + $? | bc`
+  metadatavalue=$( metadata -dssr $tmplea | grep "$field" )
+  res=$( echo $res + $? | bc )
   
   rm -fr $tmpdir
   [ $res != 0 ] && return 1
@@ -224,7 +224,7 @@ __get_ERSCEOS_sensing_date() {
 
   set -o pipefail
   
-  sensingdate=`__get_ERSCEOS_field $dataset "$field" | cut -c 40-63 | xargs -I {} date --date="{}" +"%Y%m%d"`
+  sensingdate=$( __get_ERSCEOS_field $dataset "$field" | cut -c 40-63 | xargs -I {} date --date="{}" +"%Y%m%d" )
   res=$?
   [ $res != 0 ] && return 1
   echo $sensingdate
@@ -235,31 +235,31 @@ __get_E1E2_mission() {
   local dataset="$1"
   set -o pipefail
 
-  local mimetype=`__get_MIMEtype $dataset`
+  local mimetype=$( __get_MIMEtype $dataset )
 
   case $mimetype in
     "application/x-tar")
-      [ `tar tf $dataset | wc -l` != 1 ] && return 1
-      E1=`tar -Oxf $dataset | sed -b '1q;d' | grep ".E1" | wc -l`
-      E2=`tar -Oxf $dataset | sed -b '1q;d' | grep ".E2" | wc -l`
+      [ $( tar tf $dataset | wc -l ) != 1 ] && return 1
+      E1=$( tar -Oxf $dataset | sed -b '1q;d' | grep ".E1" | wc -l )
+      E2=$( tar -Oxf $dataset | sed -b '1q;d' | grep ".E2" | wc -l )
       ;;
     "application/zip")
-      [ `zipinfo -1 $dataset | wc -l` != 1 ] && return 1
-      E1=`zcat -f $dataset | sed -b "1q;d" | grep ".E1" | wc -l`
-      E2=`zcat -f $dataset | sed -b "1q;d" | grep ".E2" | wc -l`
+      [ $( zipinfo -1 $dataset | wc -l ) != 1 ] && return 1
+      E1=$( zcat -f $dataset | sed -b "1q;d" | grep ".E1" | wc -l )
+      E2=$( zcat -f $dataset | sed -b "1q;d" | grep ".E2" | wc -l )
       ;;
     "application/octet-stream")
-      E1=`sed -b "1q;d" $dataset | grep ".E1" | wc -l`
-      E2=`sed -b "1q;d" $dataset | grep ".E2" | wc -l`
+      E1=$( sed -b "1q;d" $dataset | grep ".E1" | wc -l )
+      E2=$( sed -b "1q;d" $dataset | grep ".E2" | wc -l )
       ;;
     "application/x-gzip")
-      content=`zcat -lv $dataset | sed '2q;d' | awk '{ print $9 }'`
+      content=$( zcat -lv $dataset | sed '2q;d' | awk '{ print $9 }' )
       if [[ "$content" =~ .*\.tar.* ]]; then
-        E1=`tar -Oxf $dataset | sed '1q;d' | grep ".E1" | wc -l`
-        E2=`tar -Oxf $dataset | sed '1q;d' | grep ".E2" | wc -l`
+        E1=$( tar -Oxf $dataset | sed '1q;d' | grep ".E1" | wc -l )
+        E2=$( tar -Oxf $dataset | sed '1q;d' | grep ".E2" | wc -l )
       else
-        E1=`zcat $dataset | sed '1q;d' | grep ".E1" | wc -l`
-        E2=`zcat $dataset | sed '1q;d' | grep ".E2" | wc -l`
+        E1=$( zcat $dataset | sed '1q;d' | grep ".E1" | wc -l )
+        E2=$( zcat $dataset | sed '1q;d' | grep ".E2" | wc -l )
       fi
       ;;
   esac
@@ -275,7 +275,7 @@ __get_ERSCEOS_mission() {
 
   set -o pipefail
 
-  mission=`__get_ERSCEOS_field $dataset "$field" | sed 's/MISSION ID//' | tr -d "\t "`
+  mission=$( __get_ERSCEOS_field $dataset "$field" | sed 's/MISSION ID//' | tr -d "\t " )
   res=$?
 
   [ $res != 0 ] && return 1
@@ -296,11 +296,11 @@ __get_ERSCEOS_absorbit() {
   local dataset="$1"
 
   local field="ORBIT NUMBER"
-  local absorbit=`__get_ERSCEOS_field $dataset "$field" | sed 's/[^0-9]*//g'`
+  local absorbit=$( __get_ERSCEOS_field $dataset "$field" | sed 's/[^0-9]*//g' )
 
   [[ -z "absorbit" ]] && {
     local field="SCENE DESIGNATOR"
-    local absorbit=`__get_ERSCEOS_field $dataset "$field" | cut -d "=" -f 2 | cut -d "-" -f 1`
+    local absorbit=$( __get_ERSCEOS_field $dataset "$field" | cut -d "=" -f 2 | cut -d "-" -f 1 )
   }  
 
   [[ -z "absorbit" ]] && return -1
@@ -322,7 +322,7 @@ __get_ERSCEOS_absorbit() {
 __get_ERS1_cycle() {
   local dataset="$1"
   
-  local absorbit=`__get_ERSCEOS_absorbit $dataset`
+  local absorbit=$( __get_ERSCEOS_absorbit $dataset )
   res=$?
 
   [ $res != 0 ] && return 1
@@ -349,11 +349,11 @@ __get_ERS1_cycle() {
 __get_ERS2_cycle() {
   local dataset="$1"
   # TODO return code impact cycle information
-  local absorbit=`__get_ERSCEOS_absorbit $dataset`
+  local absorbit=$( __get_ERSCEOS_absorbit $dataset )
   res=$?
   [ $res != 0 ] && return 1
 
-  cycle=`echo "($absorbit + 145 ) / 501" | bc`  
+  cycle=$( echo "($absorbit + 145 ) / 501" | bc )  
   res=$?
   [ $res != 0 ] && return 2
   echo $cycle
@@ -365,15 +365,15 @@ __get_ERSCEOS_cycle() {
   set -o pipefail
 
   # check mission
-  local mission=`__get_ERSCEOS_mission $dataset`
+  local mission=$( __get_ERSCEOS_mission $dataset )
 
   case $mission in
     "ERS1")
-      cycle=`__get_ERS1_cycle $dataset`
+      cycle=$( __get_ERS1_cycle $dataset )
       res=$?
       ;;
     "ERS2")
-      cycle=`__get_ERS2_cycle $dataset`
+      cycle=$( __get_ERS2_cycle $dataset )
       res=$?
       ;;
   esac
@@ -386,7 +386,7 @@ __get_ERSCEOS_cycle() {
 __get_ERS1_track() {
   local dataset="$1"
 
-  local absorbit=`__get_ERSCEOS_absorbit $dataset`
+  local absorbit=$( __get_ERSCEOS_absorbit $dataset )
   res=$?
 
   [ $res != 0 ] && return 1
@@ -413,13 +413,13 @@ __get_ERS1_track() {
 __get_ERS2_track() {
   local dataset="$1"
   # TODO return code impact track information
-  local absorbit=`__get_ERSCEOS_absorbit $dataset`
+  local absorbit=$( __get_ERSCEOS_absorbit $dataset )
   res=$?
   [ $res != 0 ] && return 1
   
-  cycle=`__get_ERS2_cycle $dataset`
+  cycle=$( __get_ERS2_cycle $dataset )
 
-  track=`echo "$absorbit + 146 - $cycle * 501" | bc`
+  track=$( echo "$absorbit + 146 - $cycle * 501" | bc )
   res=$?
   [ $res != 0 ] && return 2
   echo $track
@@ -430,7 +430,7 @@ __detect_dataset() {
 
   __is_SAR $dataset &> /dev/null
   [ $? = 0 ] && { 
-    mission=`__get_E1E2_mission $dataset`
+    mission=$( __get_E1E2_mission $dataset )
     echo "${mission}-SAR"
     return 0
   }
@@ -443,7 +443,7 @@ __detect_dataset() {
 
   __is_ERSCEOS $dataset &> /dev/null
   [ $? = 0 ] && {
-    mission=`__get_ERSCEOS_mission $dataset`
+    mission=$( __get_ERSCEOS_mission $dataset )
     echo "${mission}-CEOS"
     return 0
   }
@@ -456,29 +456,29 @@ get_mission() {
 
 get_sensing_date() {
   local dataset="$1"
-  mission=`get_mission $dataset`
+  mission=$( get_mission $dataset )
   
   [ $? != 0 ] && return 1
 
   case $mission in
     "ERS1-CEOS")
-      sensingdate=`__get_ERSCEOS_sensing_date $dataset`
+      sensingdate=$( __get_ERSCEOS_sensing_date $dataset )
       res=$?
       ;;
     "ERS2-CEOS")
-      sensingdate=`__get_ERSCEOS_sensing_date $dataset`
+      sensingdate=$( __get_ERSCEOS_sensing_date $dataset )
       res=$?
       ;;
     "ASAR")
-      sensingdate=`__get_ASAR_sensing_date $dataset`
+      sensingdate=$( __get_ASAR_sensing_date $dataset )
       res=$?
       ;;
     "ERS1-SAR")
-      sensingdate=`__get_ERSE1_sensing_date $dataset`
+      sensingdate=$( __get_ERSE1_sensing_date $dataset )
       res=$?
       ;;
     "ERS2-SAR")
-      sensingdate=`__get_ERSE2_sensing_date $dataset`
+      sensingdate=$( __get_ERSE2_sensing_date $dataset )
       res=$?
       ;;
     *)
@@ -508,19 +508,19 @@ __link_ASAR_gmtsar() {
   # TODD add unit test
   local dataset="$1"
   local target="$2"
-  local mimetype=`__get_MIMEtype $dataset`
+  local mimetype=$( __get_MIMEtype $dataset )
   
   mkdir -p $target
 
   case $mimetype in
     "application/x-tar")
      set -x 
-      tar -Oxf $dataset > $target/`basename $dataset | sed 's/\.tar//'`.baq
+      tar -Oxf $dataset > $target/$( basename $dataset | sed 's/\.tar//' ).baq
       res=$?
       ;;
     "application/octet-stream")
       dataset_folder=$( cd "$( dirname $dataset )" && pwd )
-      ln -s $dataset_folder/`basename $dataset` $target/`basename $dataset`.baq
+      ln -s $dataset_folder/$( basename $dataset ) $target/$( basename $dataset ).baq
       res=$?
       cd - &> /dev/null
       ;;
@@ -535,7 +535,7 @@ create_env_gmtsar() {
   local slave="$2"
   local target="$3"
 
-  mission=`get_mission $master`
+  mission=$( get_mission $master )
 
   mkdir -p $target/raw
   [ $? != 0 ] && return 1
