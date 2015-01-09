@@ -2,6 +2,10 @@
 
 set -o pipefail
 
+function err() {
+  echo "$@" 1>&2
+}
+
 # /*!
 #     __get_MIMEtype() is an internal function to determine the mime type. Invoking functions can then handle the input properly
 #

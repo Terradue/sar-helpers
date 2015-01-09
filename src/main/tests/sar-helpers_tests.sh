@@ -537,6 +537,59 @@ testCreate_env_roipac_ERSCEOS() {
   find $_TEST
 }
 
+#
+#
+# TSX TerraSAR-X
+#
+#
+testGetTSX_sensing_date() {
+  out=$( __get_TSX_sensing_date "$_ROOT/artifacts/TSX_20140212T164857.921_Etna_C222_O055_A_R_SM006_SSC.tar.gz" )
+  res=$?
+  assertEquals "Failed to extract sensing date from TerraSAR-X" \
+  "20140212" "$out"
+}
+
+testGetTSX_mission() {
+  out=$( __get_TSX_mission "$_ROOT/artifacts/TSX_20140212T164857.921_Etna_C222_O055_A_R_SM006_SSC.tar.gz" )
+  res=$?
+  assertEquals "Failed to extract mission from TerraSAR-X" \
+  "TDX-1" "$out"
+}
+
+testGetTSX_track() {
+  out=$( __get_TSX_track "$_ROOT/artifacts/TSX_20140212T164857.921_Etna_C222_O055_A_R_SM006_SSC.tar.gz" )
+  res=$?
+  assertEquals "Failed to extract track from TerraSAR-X" \
+  "55" "$out"
+}
+
+testGetTSX_cycle() {
+  out=$( __get_TSX_cycle "$_ROOT/artifacts/TSX_20140212T164857.921_Etna_C222_O055_A_R_SM006_SSC.tar.gz" )
+  res=$?
+  assertEquals "Failed to extract cycle from TerraSAR-X" \
+  "222" "$out"
+}
+
+testGetTSX_direction() {
+  out=$( __get_TSX_direction "$_ROOT/artifacts/TSX_20140212T164857.921_Etna_C222_O055_A_R_SM006_SSC.tar.gz" )
+  res=$?
+  assertEquals "Failed to extract direction from TerraSAR-X" \
+  "ASCENDING" "$out"
+}
+
+testGetTSX_orbit() {
+  out=$( __get_TSX_orbit "$_ROOT/artifacts/TSX_20140212T164857.921_Etna_C222_O055_A_R_SM006_SSC.tar.gz" )
+  res=$?
+  assertEquals "Failed to extract absolute orbit from TerraSAR-X" \
+  "20232" "$out"
+}
+
+testIsTSX() {
+  out=$( __is_TSX "$_ROOT/artifacts/TSX_20140212T164857.921_Etna_C222_O055_A_R_SM006_SSC.tar.gz" )
+  res=$?
+  assertEquals "Failed to detect TSX" \
+  "0" "$res"
+}
 
 
 setUp() {
