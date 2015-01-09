@@ -34,7 +34,8 @@ Source it in your scripts with:
 ```bash
 #!/bin/bash
 
-. /opt/sar-helpers/sar-helpers.sh
+export SAR_HELPERS_HOME=/opt/sar-helpers
+. $SAR_HELPERS_HOME/sar-helpers.sh
 ```
 
 #### Releases

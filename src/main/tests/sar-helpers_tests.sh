@@ -254,25 +254,25 @@ testERS2CEOS_lowcase_tar_track() {
 #
 #
 testERS1E1_sensingdate() {
-  out=`__get_ERSE1_sensing_date $_ROOT/artifacts/SAR_IM__0PXASI19960627_211354_00000017G157_00358_25897_9069.E1`
+  out=`__get_ERS1_SAR_sensing_date $_ROOT/artifacts/SAR_IM__0PXASI19960627_211354_00000017G157_00358_25897_9069.E1`
   assertEquals "Failed to retrieve ERS-1 in Envisat format sensing date" \
   "19960627" "$out"
 }
 
 testERS1E1_sensingdate_tar() {
-  out=`__get_ERSE1_sensing_date $_ROOT/artifacts/SAR_IM__0PXASI19960627_211354_00000017G157_00358_25897_9069.E1.tar`
+  out=`__get_ERS1_SAR_sensing_date $_ROOT/artifacts/SAR_IM__0PXASI19960627_211354_00000017G157_00358_25897_9069.E1.tar`
   assertEquals "Failed to retrieve ERS-1 in Envisat format sensing date - tar" \
   "19960627" "$out"
 }
 
 testERS1E1_sensingdate_zip() {
-  out=`__get_ERSE1_sensing_date $_ROOT/artifacts/SAR_IM__0PXASI19960627_211354_00000017G157_00358_25897_9069.E1.zip`
+  out=`__get_ERS1_SAR_sensing_date $_ROOT/artifacts/SAR_IM__0PXASI19960627_211354_00000017G157_00358_25897_9069.E1.zip`
   assertEquals "Failed to retrieve ERS-1 in Envisat format sensing date - zip" \
   "19960627" "$out"
 }
 
 testERS1E1_sensingdate_gzip() {
-  out=`__get_ERSE1_sensing_date $_ROOT/artifacts/SAR_IM__0PXASI19960627_211354_00000017G157_00358_25897_9069.E1.gz`
+  out=`__get_ERS1_SAR_sensing_date $_ROOT/artifacts/SAR_IM__0PXASI19960627_211354_00000017G157_00358_25897_9069.E1.gz`
   assertEquals "Failed to retrieve ERS-1 in Envisat format sensing date - gzip" \
   "19960627" "$out"
 }
@@ -284,7 +284,7 @@ testERS1E1_mission() {
 }
 
 testERS1E1_sensingdate_targz() {
-  out=`__get_ERSE1_sensing_date $_ROOT/artifacts/SAR_IM__0PXASI19960627_211354_00000017G157_00358_25897_9069.E1.tar.gz`
+  out=`__get_ERS1_SAR_sensing_date $_ROOT/artifacts/SAR_IM__0PXASI19960627_211354_00000017G157_00358_25897_9069.E1.tar.gz`
   assertEquals "Failed to retrieve ERS-1 in Envisat format sensing date - tar.gz" \
   "19960627" "$out"
 }
@@ -331,19 +331,19 @@ testDetect_ASAR() {
 testDetect_SARE1() {
   out=`__detect_dataset $_ROOT/artifacts/SAR_IM__0PXASI19960627_211354_00000017G157_00358_25897_9069.E1`
   assertEquals "Failed to detect ERS-1 in Envisat format (.E1) " \
-  "ERS1-SAR" "$out"
+  "ERS1_SAR" "$out"
 }
 
 testDetect_ERS2_CEOS() {
   out=`__detect_dataset $_ROOT/artifacts/ER02_SAR_RAW_0P_20100118T174929_20100118T174945_ESR_77106.CEOS.tar`
   assertEquals "Failed to detect ERS-2 in CEOS format " \
-  "ERS2-CEOS" "$out"
+  "ERS2_CEOS" "$out"
 }
 
 testDetect_ERS1_CEOS() {
   out=`__detect_dataset $_ROOT/artifacts/ER01_SAR_RAW_0P_20000217T095726_20000217T095743_44928.CEOS_low_case.tar`
   assertEquals "Failed to detect ERS-1 in CEOS format " \
-  "ERS1-CEOS" "$out"
+  "ERS1_CEOS" "$out"
 }
 
 #
@@ -542,6 +542,7 @@ testCreate_env_roipac_ERSCEOS() {
 setUp() {
   # load include to test
   export _ROOT=`dirname $0`
+  export SAR_HELPERS_HOME=$_ROOT/../resources/lib 
   . $_ROOT/../resources/lib/sar-helpers.sh
   mkdir -p $_ROOT/runtime
   export _TEST=$_ROOT/runtime
