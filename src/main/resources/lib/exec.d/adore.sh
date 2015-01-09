@@ -78,7 +78,7 @@ dataFile="ASA*.N1"
 s_in_method="ASAR"
 EOF
         ;;
-      "TSX-1" | "TDX-1")
+      "TSX" | "TDX")
         __link_TSX_adore $sar $target/datafolder
         res=$?
         echo > ${target}/settings << EOF
