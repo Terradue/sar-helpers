@@ -132,7 +132,7 @@
       <plugin>
         <groupId>de.jutzig</groupId>
         <artifactId>github-release-plugin</artifactId>
-        <version>1.0.3</version>
+        <version>1.1.1-dns</version>
         <executions>
           <execution>
             <id>github-upload</id>
@@ -186,10 +186,39 @@
               <arguments>
                 <argument>-o</argument>
                 <argument>${project.build.directory}/doc</argument>
-                <argument>sar-helpers.sh</argument>
+                <argument>.</argument>
               </arguments>
             </configuration>
           </execution>
+          <execution>
+            <id>gatherheaderdoc</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+            <configuration>
+              <executable>gatherheaderdoc</executable>
+              <workingDirectory>${project.build.directory}/doc</workingDirectory>
+              <arguments>
+                <argument>${project.build.directory}/doc</argument>
+              </arguments>
+            </configuration>
+          </execution>
+         <execution>
+            <id>rename</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+            <configuration>
+              <executable>mv</executable>
+              <workingDirectory>${project.build.directory}/doc</workingDirectory>
+              <arguments>
+                <argument>${project.build.directory}/doc/masterTOC.html</argument>
+                <argument>${project.build.directory}/doc/index.html</argument>
+              </arguments>
+            </configuration>
+          </execution> 
         </executions>
       </plugin>
       <plugin>
@@ -204,7 +233,7 @@
           </dependency>
         </dependencies>
       </plugin>
-      <plugin>
+<!--      <plugin>
         <groupId>com.github.github</groupId>
         <artifactId>site-maven-plugin</artifactId>
         <version>0.8</version>
@@ -218,11 +247,11 @@
             </goals>
             <phase>site-deploy</phase>
             <configuration>
-              <outputDirectory>${project.build.directory}/doc/sar-helpers_sh</outputDirectory>
+              <outputDirectory>${project.build.directory}/doc</outputDirectory>
             </configuration>
           </execution>
         </executions>
-      </plugin>
+      </plugin>-->
       <plugin>
         <groupId>com.github.github</groupId>
         <artifactId>site-maven-plugin</artifactId>
@@ -237,7 +266,7 @@
             </goals>
             <phase>site-deploy</phase>
             <configuration>
-              <outputDirectory>${project.build.directory}/doc/sar-helpers_sh</outputDirectory>
+              <outputDirectory>${project.build.directory}/doc</outputDirectory>
               <noJekyll>true</noJekyll>
             </configuration>
           </execution>
