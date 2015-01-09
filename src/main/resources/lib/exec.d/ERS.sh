@@ -270,3 +270,14 @@ __get_ERS2_track() {
   [ $res != 0 ] && return 2
   echo $track
 }
+
+__get_ERS1_CEOS_track() {
+  __get_ERS1_track $@
+  return $?
+}
+
+__get_ERS2_CEOS_track() {
+  __get_ERS2_track $@
+  return $?
+}
+

@@ -2,7 +2,7 @@
 
 set -o pipefail
 
-function err() {
+err() {
   echo "$@" 1>&2
 }
 
@@ -15,7 +15,7 @@ function err() {
 #
 #     @updated 2014-01-05
 #  */
-function __get_MIMEtype() {
+__get_MIMEtype() {
   local file=$1
 
   [ ! -e "$1" ] && return 1
@@ -29,7 +29,7 @@ function __get_MIMEtype() {
 #
 #     @updated 2003-03-15
 #  */
-function __get_archive_content() {
+__get_archive_content() {
   local dataset="$1"
   local mimetype=$( __get_MIMEtype "${dataset}" )
 
@@ -124,5 +124,35 @@ __detect_dataset() {
     echo "${mission}_CEOS"
     return 0
   }
+
+  __is_TSX $dataset &> /dev/null
+  [ $? = 0 ] && {
+    mission=$( __get_TSX_mission $dataset )
+    echo ${mission}   
+    return 0
+  }
+
   return 1
 }
+
+
+__get_metadata_value() {
+  local dataset="$1"
+  local metadata_field="$2"
+
+  mission=$( get_mission $dataset )
+  [ $? != 0 ] && return 1
+
+  #let's check if a function for the specific mission exists
+  type __get_${mission}_${metadata_field} &> /dev/null
+  [ $? != 0 ] && { 
+    err "Missing function __get_${mission}_${metadata_field}"
+    return 1
+  }
+
+  metadata_value=$( __get_${mission}_${metadata_field} $dataset )
+  res=$?
+  [ $res == 0 ] && echo $metadata_value || return 1
+
+}
+

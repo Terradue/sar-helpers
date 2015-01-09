@@ -8,19 +8,44 @@ get_mission() {
 
 get_sensing_date() {
   local dataset="$1"
+  local metadata_field
+  metadata_field="sensing_date"
 
-  mission=$( get_mission $dataset )
-  [ $? != 0 ] && return 1
-
-  #let's check if a function for the specific mission exists
-  type __get_${mission}_sensing_date &> /dev/null
-  [ $? != 0 ] && return 1
-
-  sensingdate=$( __get_${mission}_sensing_date $dataset )
+  metadata_value=$( __get_metadata_value ${dataset} ${metadata_field} )
   res=$?
-  [ $res == 0 ] && echo $sensingdate || return 1
+  [ $res == 0 ] && echo ${metadata_value} || return 1
+
 }
 
-# get_cycle()
+get_track() {
+  local dataset="$1"
+  local metadata_field
+  metadata_field="track"
 
-# get_track()
+  metadata_value=$( __get_metadata_value ${dataset} ${metadata_field} )
+  res=$?
+  [ $res == 0 ] && echo ${metadata_value} || return 1
+
+}
+
+get_direction() {
+  local dataset="$1"
+  local metadata_field
+  metadata_field="direction"
+ 
+  metadata_value=$( __get_metadata_value ${dataset} ${metadata_field} )
+  res=$?
+  [ $res == 0 ] && echo ${metadata_value} || return 1
+
+}
+
+get_cycle() {
+  local dataset="$1"
+  local metadata_field
+  metadata_field="cycle"
+
+  metadata_value=$( __get_metadata_value ${dataset} ${metadata_field} )
+  res=$?
+  [ $res == 0 ] && echo ${metadata_value} || return 1
+
+}

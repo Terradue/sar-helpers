@@ -363,6 +363,55 @@ testGetSensingdate_ERS1E1() {
   "19960627" "$out"
 }
 
+testGetSensingdate_TSX() {
+  out=`get_sensing_date "$_ROOT/artifacts/TSX_20140212T164857.921_Etna_C222_O055_A_R_SM006_SSC.tar.gz"`
+  assertEquals "Failed to retrieve TSX sensing date" \
+  "20140212" "$out"
+}
+
+
+testGetTrack_ERS1CEOSlowcase_track() {
+  out=`get_track $_ROOT/artifacts/ER01_SAR_RAW_0P_20000217T095726_20000217T095743_44928.CEOS_low_case.tar`
+  assertEquals "Failed to ERS CEOS tar low case track" \
+  "351" "$out"
+}
+
+testGetTrack_ERS2CEOS_lowcase_targz_track() {
+  out=`get_track $_ROOT/artifacts/ER02_SAR_RAW_0P_20100118T174929_20100118T174945_ESR_77106.CEOS.tar.gz`
+  assertEquals "Failed to ERS-2 CEOS tar low case track" \
+  "98" "$out"
+}
+
+testGetTrack_ERS2CEOS_lowcase_tar_track() {
+  out=`get_track $_ROOT/artifacts/ER02_SAR_RAW_0P_20100118T174929_20100118T174945_ESR_77106.CEOS.tar`
+  assertEquals "Failed to ERS-2 CEOS tar low case track" \
+  "98" "$out"
+}
+
+testGetTrack_TSX() {
+  out=`get_track "$_ROOT/artifacts/TSX_20140212T164857.921_Etna_C222_O055_A_R_SM006_SSC.tar.gz"`
+  assertEquals "Failed to retrieve TSX track" \
+  "55" "$out"
+}
+
+testGetDirection_ASAR() {
+  out=`get_direction "$_ROOT/artifacts/ASA_IM__0CNPDE20120329_071134_000000163113_00121_52721_6279.N1"`
+  assertEquals "Failed to retrieve ASAR orbit direction" \
+  "ASCENDING" "$out"
+}
+
+testGetDirection_TSX() {
+  out=`get_direction "$_ROOT/artifacts/TSX_20140212T164857.921_Etna_C222_O055_A_R_SM006_SSC.tar.gz"`
+  assertEquals "Failed to retrieve TSX orbit direction" \
+  "ASCENDING" "$out"
+}
+
+testGetCycle_TSX() {
+  out=`get_cycle "$_ROOT/artifacts/TSX_20140212T164857.921_Etna_C222_O055_A_R_SM006_SSC.tar.gz"`
+  assertEquals "Failed to retrieve TSX orbit direction" \
+  "222" "$out"
+}
+
 #
 #
 # GMTSAR
@@ -553,7 +602,7 @@ testGetTSX_mission() {
   out=$( __get_TSX_mission "$_ROOT/artifacts/TSX_20140212T164857.921_Etna_C222_O055_A_R_SM006_SSC.tar.gz" )
   res=$?
   assertEquals "Failed to extract mission from TerraSAR-X" \
-  "TDX-1" "$out"
+  "TDX" "$out"
 }
 
 testGetTSX_track() {

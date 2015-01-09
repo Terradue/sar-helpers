@@ -76,6 +76,11 @@ function __get_TSX_sensing_date() {
   echo $metadata_value
 }
 
+__get_TDX_sensing_date() {
+  __get_TSX_sensing_date $@
+  return $?
+}
+
 # /*!
 # __get_TSX_mission() is an internal function to extract TerraSAR-X mission 
 #
@@ -92,13 +97,17 @@ function __get_TSX_mission() {
   local xpath
   xpath='//level1Product/productInfo/missionInfo/mission/text()'
 
-  metadata_value=$( __get_TSX_field $dataset $xpath )
+  metadata_value=$( __get_TSX_field $dataset $xpath | sed 's/-1//' )
   res=$?
 
   [ $res != 0 ] && return 1
   echo $metadata_value
 }
 
+__get_TDX_mission() {
+  __get_TSX_mission $@
+  return $?
+}
 
 # /*!
 # __get_TSX_track() is an internal function to extract TerraSAR-X track (relative orbit)
@@ -109,7 +118,7 @@ function __get_TSX_mission() {
 #
 # @updated 2014-01-09
 # */
-function __get_TSX_track() {
+__get_TSX_track() {
   set +x
 
   local dataset="$1"
@@ -121,6 +130,11 @@ function __get_TSX_track() {
 
   [ $res != 0 ] && return 1
   echo $metadata_value
+}
+
+__get_TDX_track() {
+  __get_TSX_track $@
+  return $?
 }
 
 # /*!
@@ -146,6 +160,11 @@ function __get_TSX_cycle() {
   echo ${metadata_value}
 }
 
+__get_TDX_cycle() {
+  __get_TSX_cycle $@
+  return $?
+}
+
 # /*!
 # __get_TSX_direction() is an internal function to extract TerraSAR-X acquisition direction: ASCENDING or DESCENDING
 #
@@ -167,6 +186,11 @@ function __get_TSX_direction() {
 
   [ $res != 0 ] && return 1
   echo ${metadata_value}
+}
+
+__get_TDX_direction() {
+  __get_TSX_direction $@
+  return $?
 }
 
 # /*!
@@ -191,6 +215,11 @@ function __get_TSX_orbit() {
   [ $res != 0 ] && return 1
   echo ${metadata_value}
 
+}
+
+__get_TDX_orbit() {
+  __get_TSX_orbit $@
+  return $?
 }
 
 __is_TSX() {
