@@ -175,6 +175,23 @@
         <version>1.3.1</version>
         <executions>
           <execution>
+            <id>gitbook</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+            <configuration>
+              <executable>gitbook</executable>
+              <workingDirectory>${basedir}/src/main/doc</workingDirectory>
+              <arguments>
+                <argument>build</argument>
+                <argument>-o</argument>
+                <argument>${project.build.directory}/doc/</argument>
+                <argument>.</argument>
+              </arguments>
+            </configuration>
+          </execution>
+          <execution>
             <id>headerdoc2html</id>
             <phase>generate-sources</phase>
             <goals>
@@ -185,7 +202,7 @@
               <workingDirectory>${basedir}/src/main/resources/lib</workingDirectory>
               <arguments>
                 <argument>-o</argument>
-                <argument>${project.build.directory}/doc</argument>
+                <argument>${project.build.directory}/doc/doc</argument>
                 <argument>.</argument>
               </arguments>
             </configuration>
@@ -198,9 +215,9 @@
             </goals>
             <configuration>
               <executable>gatherheaderdoc</executable>
-              <workingDirectory>${project.build.directory}/doc</workingDirectory>
+              <workingDirectory>${project.build.directory}/doc/doc</workingDirectory>
               <arguments>
-                <argument>${project.build.directory}/doc</argument>
+                <argument>${project.build.directory}/doc/doc</argument>
               </arguments>
             </configuration>
           </execution>
@@ -212,10 +229,10 @@
             </goals>
             <configuration>
               <executable>mv</executable>
-              <workingDirectory>${project.build.directory}/doc</workingDirectory>
+              <workingDirectory>${project.build.directory}/doc/doc</workingDirectory>
               <arguments>
-                <argument>${project.build.directory}/doc/masterTOC.html</argument>
-                <argument>${project.build.directory}/doc/index.html</argument>
+                <argument>${project.build.directory}/doc/doc/masterTOC.html</argument>
+                <argument>${project.build.directory}/doc/doc/index.html</argument>
               </arguments>
             </configuration>
           </execution> 
