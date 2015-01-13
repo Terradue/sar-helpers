@@ -88,7 +88,7 @@ __link_TSX_adore() {
 # @updated 2014-01-13
 # */
 create_env_adore() {
-set -x
+  
   local master="$1"
   local slave="$2"
   local target="$3"
@@ -118,7 +118,7 @@ set -x
       __link_N1E1E2_adore ${slave} ${target}/data
       res=$?
 
-      echo > ${settings} << EOF
+      cat > ${settings} << EOF
 m_in_method='ASAR'
 s_in_method='ASAR'
 m_in_dat="${target}/data/$( basename ${master} )"
@@ -157,7 +157,7 @@ EOF
 
   [ -e ${settings} ] && sed -i  's/^/settings apply -r -q /' $settings  
   res=$?
-set +x
-  return $?
+   
+  return $res
 
 }

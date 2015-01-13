@@ -24,7 +24,7 @@ __link_N1E1E2_roipac() {
       dataset_folder=$( cd "$( dirname $dataset )" && pwd )
       ln -s $dataset_folder/`basename $dataset` $target/`basename $dataset`
       res=$?
-      cd - &> /dev/null
+      #cd - &> /dev/null
       ;;
     "application/zip")
       zcat $dataset > $target/`basename $dataset`
