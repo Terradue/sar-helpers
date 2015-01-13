@@ -11,6 +11,7 @@ set -o pipefail
 #
 #      @updated 2014-01-05
 #  */
+
 function __get_N1_sensing_date() {
   local dataset="$1"
   local mimetype=$( __get_MIMEtype $dataset )
@@ -42,7 +43,7 @@ function __get_N1_sensing_date() {
       ;;
   esac
 
-  [ $res != 0 ] && return 1
+  [ ! -z $res ] && [ $res != 0 ] && return 1
   echo $sensingdate
 }
 

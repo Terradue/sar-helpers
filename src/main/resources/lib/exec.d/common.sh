@@ -98,7 +98,7 @@ __is_N1E1E2() {
       ;;
   esac
 
-  [ $res != 0 ] && return 1
+  [ ! -z $res ] && [ $res != 0 ] && return 1
   
   #tests the provided prefix (or a list separated by coma)
   for myprefix in $( echo "${test}" | tr ',' '\n' )
