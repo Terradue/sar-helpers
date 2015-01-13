@@ -51,6 +51,6 @@ __get_ASAR_sensing_date() {
 }
 
 __is_ASAR() {
-  __is_N1E1E2 $@ "ASA_IM__0"
+  __is_N1E1E2 $@ "ASA_IM__0,ASA_IMS_1"
   return $?
 }
