@@ -5,7 +5,7 @@
         
         <meta charset="UTF-8">
         <meta http-equiv="X-UA-Compatible" content="IE=11; IE=10; IE=9; IE=8; IE=7; IE=EDGE" />
-        <title>Envisat ASAR | SAR-helpers</title>
+        <title>Functions available | SAR-helpers</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="generator" content="GitBook 1.5.0">
@@ -19,8 +19,10 @@
         
     
     
+    <link rel="next" href="../started/README.html" />
     
-    <link rel="prev" href="../started/README.html" />
+    
+    <link rel="prev" href="../motivation/README.html" />
     
 
         
@@ -32,7 +34,7 @@
 
 
         
-    <div class="book" data-level="3.1" data-basepath=".." data-revision="1421143366837">
+    <div class="book" data-level="2" data-basepath=".." data-revision="1421143366837">
     
 
 <div class="book-summary">
@@ -80,7 +82,7 @@
         </li>
     
         
-        <li class="chapter " data-level="2" data-path="functions/README.html">
+        <li class="chapter active" data-level="2" data-path="functions/README.html">
             
                 
                     <a href="../functions/README.html">
@@ -113,7 +115,7 @@
                 
     
         
-        <li class="chapter active" data-level="3.1" data-path="started/asar.html">
+        <li class="chapter " data-level="3.1" data-path="started/asar.html">
             
                 
                     <a href="../started/asar.html">
@@ -278,48 +280,27 @@
                 <div class="page-inner">
                 
                 
-                    <section class="normal" id="section-gitbook_5">
+                    <section class="normal" id="section-gitbook_3">
                     
-                        <h3 id="getting-started-with-envisat-asar-image-mode-level-0--level-1">Getting started with Envisat ASAR Image Mode Level 0 &amp; Level 1</h3>
-<ul>
-<li><a href="#setting-environment">Setting the environment</a></li>
-<li><a href="#getting-mission">Getting the mission</a></li>
-<li><a href="#getting-cycle">Getting the cycle</a></li>
-<li><a href="#getting-track">Getting the track (relative orbit)</a></li>
-<li><a href="#getting-date">Getting the sensing date</a></li>
-</ul>
-<h4 id="a-namesetting-environmentasetting-up-the-environment"><a name="setting-environment"></a>Setting up the environment</h4>
-<p>Export the <em>sar_helpers</em> environment variable:</p>
-<pre><code class="lang-bash"><span class="hljs-keyword">export</span> SAR_HELPERS_HOME=/opt/sar-helpers/lib
-. <span class="hljs-variable">$SAR_HELPERS_HOME</span>/sar-helpers.sh
-</code></pre>
-<p>The Envisat ASAR product can be downloaded from <a href="http://eo-virtual-archive4.esa.int/?q=ASA_IM__0CNPDE20120328_174858_000000163113_00113_52713_6275.N1" target="_blank">http://eo-virtual-archive4.esa.int/?q=ASA_IM__0CNPDE20120328_174858_000000163113_00113_52713_6275.N1</a></p>
-<h4 id="a-namegetting-missionamission"><a name="getting-mission"></a>Mission</h4>
-<pre><code class="lang-bash">get_mission ASA_IM__0CNPDE20120328_174858_000000163113_00113_52713_6275.N1
-</code></pre>
-<p>will return:</p>
-<pre><code class="lang-bash">ASAR
-</code></pre>
-<h4 id="a-namegetting-cycleacycle"><a name="getting-cycle"></a>Cycle</h4>
-<pre><code class="lang-bash">get_cycle ASA_IM__0CNPDE20120328_174858_000000163113_00113_52713_6275.N1
-</code></pre>
-<p>will return:</p>
-<pre><code class="lang-bash">TODO
-</code></pre>
-<h4 id="a-namegetting-trackatrack-relative-orbit"><a name="getting-track"></a>Track (relative orbit)</h4>
-<pre><code class="lang-bash">get_track ASA_IM__0CNPDE20120328_174858_000000163113_00113_52713_6275.N1
-</code></pre>
-<p>will return:</p>
-<pre><code class="lang-bash"><span class="hljs-number">113</span>
-</code></pre>
-<h4 id="a-namegetting-dateasensing-date"><a name="getting-date"></a>Sensing date</h4>
-<pre><code class="lang-bash">get_sensing_date ASA_IM__0CNPDE20120328_174858_000000163113_00113_52713_6275.N1
-</code></pre>
-<p>will return:</p>
-<pre><code class="lang-bash"><span class="hljs-number">20120328</span>
-</code></pre>
-<h4 id="a-namegetting-directionadirection"><a name="getting-direction"></a>Direction</h4>
-<p><em>Not supported</em></p>
+                        <h3 id="functions-supported-by-mission">Functions supported by mission</h3>
+<table>
+<thead>
+<tr>
+<th>Mission</th>
+<th>Functions available</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Envisat ASAR Image Mode Level 0 &amp; Level 1</td>
+<td>get_mission  get_cycle  get_track  get_sensing_date</td>
+</tr>
+<tr>
+<td>ERS-1/2</td>
+<td>get_mission get_cycle get_track get_sensing_date</td>
+</tr>
+</tbody>
+</table>
 
                     
                     </section>
@@ -330,8 +311,10 @@
         </div>
 
         
-        <a href="../started/README.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page: Getting started"><i class="fa fa-angle-left"></i></a>
+        <a href="../motivation/README.html" class="navigation navigation-prev " aria-label="Previous page: Motivation"><i class="fa fa-angle-left"></i></a>
         
+        
+        <a href="../started/README.html" class="navigation navigation-next " aria-label="Next page: Getting started"><i class="fa fa-angle-right"></i></a>
         
     </div>
 </div>
