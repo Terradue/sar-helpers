@@ -6,9 +6,10 @@ _sar-helpers_ are a set of bash functions to ease the extraction of SAR data inf
 
 This guide provides:
 
-* The motivation behind this bash library 
-* A Getting Started guide with examples
-* The technical documention
+* The motivation behind the _sar-helpers_ bash library 
+* The functions coverage per mission and software toolbox
+* A getting started section with examples
+* The _sar-helpers_ library documention 
 
 The _sar-helpers_ code is OpenSource and available here: https://github.com/Terradue/sar-helpers
 

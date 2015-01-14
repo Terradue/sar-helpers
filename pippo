@@ -1,0 +1,4 @@
+settings apply -r -q m_in_method='ASAR'
+settings apply -r -q dataFile="ASA*.N1"
+settings apply -r -q s_in_method="ASAR"
+settings apply -r -q 
