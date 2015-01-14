@@ -5,7 +5,7 @@
         
         <meta charset="UTF-8">
         <meta http-equiv="X-UA-Compatible" content="IE=11; IE=10; IE=9; IE=8; IE=7; IE=EDGE" />
-        <title>Motivation | SAR-helpers</title>
+        <title>Getting started | SAR-helpers</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="generator" content="GitBook 1.5.0">
@@ -19,10 +19,10 @@
         
     
     
-    <link rel="next" href="../functions/README.html" />
+    <link rel="next" href="../started/asar.html" />
     
     
-    <link rel="prev" href="../index.html" />
+    <link rel="prev" href="../functions/README.html" />
     
 
         
@@ -34,7 +34,7 @@
 
 
         
-    <div class="book" data-level="1" data-basepath=".." data-revision="1421231099570">
+    <div class="book" data-level="3" data-basepath=".." data-revision="1421231099570">
     
 
 <div class="book-summary">
@@ -66,7 +66,7 @@
         </li>
     
         
-        <li class="chapter active" data-level="1" data-path="motivation/README.html">
+        <li class="chapter " data-level="1" data-path="motivation/README.html">
             
                 
                     <a href="../motivation/README.html">
@@ -98,7 +98,7 @@
         </li>
     
         
-        <li class="chapter " data-level="3" data-path="started/README.html">
+        <li class="chapter active" data-level="3" data-path="started/README.html">
             
                 
                     <a href="../started/README.html">
@@ -280,13 +280,33 @@
                 <div class="page-inner">
                 
                 
-                    <section class="normal" id="section-gitbook_4">
+                    <section class="normal" id="section-gitbook_5">
                     
-                        <h2 id="motivation">Motivation</h2>
-<p>All SAR data users have written short scripts to extract e.g. the mission, the cycle, the relative orbit or the sensing date.
-We also went through that when using GMTSAR, ROI_PAC or DORIS (via Adore) on our Cloud platform. </p>
-<p>Each Space Agency went through a different path in terms of file format, archiving stategy, etc. Within each Agency there are also differences between the missions (e.g. ESA with ERS-1/2 CEOS format, Envisat ASAR in Envisat format, and finally Sentinel-1 data as XML and Geotiff).</p>
-<p>This bash library gathers helper functions that have the goal to ease the extraction of metadata and data before using tools like GMTSAR, ROI_PAC or DORIS (among others).</p>
+                        <h2 id="getting-started-with-sar-helpers">Getting started with sar-helpers</h2>
+<h4 id="installing-a-release">Installing a release</h4>
+<p><em>sar-helpers</em> repository is hosted by GitHub, as such the releases are also there.</p>
+<p>To see the current release go <a href="https://github.com/Terradue/sar-helpers/releases" target="_blank">here</a></p>
+<p><em>Download a release</em></p>
+<p>Use <em>wget</em> to download the RPM and then <em>yum</em> to install the package (as root):</p>
+<pre><code class="lang-bash">wget TODO
+yum install TODO
+</code></pre>
+<blockquote>
+<p><em>Note</em> adapt the version number to the release you want to install</p>
+</blockquote>
+<p>The procedure above will install <em>sar-helpers</em> in <em>/opt/sar-helpers</em>.</p>
+<p>To use <em>sar-helpers</em>, do:</p>
+<pre><code class="lang-bash"><span class="hljs-keyword">export</span> SAR_HELPERS_HOME=/opt/sar-helpers/lib/
+. <span class="hljs-variable">$SAR_HELPERS_HOME</span>/sar-helpers.sh
+</code></pre>
+<h4 id="installing-the-development-version">Installing the development version</h4>
+<p>Clone the repository:</p>
+<pre><code class="lang-bash">git clone git@github.com:Terradue/sar-helpers.git
+<span class="hljs-built_in">cd</span> sar-helpers
+</code></pre>
+<p>Use <em>maven</em> to install the library:</p>
+<pre><code class="lang-bash">mvn clean install
+</code></pre>
 
                     
                     </section>
@@ -297,10 +317,10 @@ We also went through that when using GMTSAR, ROI_PAC or DORIS (via Adore) on our
         </div>
 
         
-        <a href="../index.html" class="navigation navigation-prev " aria-label="Previous page: Introduction"><i class="fa fa-angle-left"></i></a>
+        <a href="../functions/README.html" class="navigation navigation-prev " aria-label="Previous page: Functions available"><i class="fa fa-angle-left"></i></a>
         
         
-        <a href="../functions/README.html" class="navigation navigation-next " aria-label="Next page: Functions available"><i class="fa fa-angle-right"></i></a>
+        <a href="../started/asar.html" class="navigation navigation-next " aria-label="Next page: Envisat ASAR"><i class="fa fa-angle-right"></i></a>
         
     </div>
 </div>
