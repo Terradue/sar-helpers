@@ -18,25 +18,22 @@ __link_N1E1E2_adore() {
   local target="$2"
   local mimetype
   mimetype=$( __get_MIMEtype $dataset )
-  local sensing_date
-  sensing_date=$( get_sensing_date ${dataset}  ) 
-  [ $? != 0 ] && return 1
 
-  mkdir -p ${target}/${sensing_date}
+  mkdir -p ${target}
 
   case ${mimetype} in
     "application/x-tar")
-      tar -Oxf ${dataset} > ${target}/${sensing_date}/$( basename $dataset | sed 's/\.tar//' )
+      tar -Oxf ${dataset} > ${target}/$( basename $dataset | sed 's/\.tar//' )
       res=$?
       ;;
     "application/octet-stream")
       dataset_folder=$( cd "$( dirname ${dataset} )" && pwd )
-      cp ${dataset_folder}/$( basename ${dataset} ) ${target}/${sensing_date}/$( basename ${dataset} )
+      cp ${dataset_folder}/$( basename ${dataset} ) ${target}/$( basename ${dataset} )
       res=$?
       #cd - &> /dev/null
       ;;
     "application/zip")
-      zcat ${dataset} > ${target}/${sensing_date}/$( basename $dataset )
+      zcat ${dataset} > ${target}/$( basename $dataset )
       res=$?
       ;;
       # TODO handle other mime types
@@ -44,10 +41,10 @@ __link_N1E1E2_adore() {
       content=`zcat -lv ${dataset} | sed '2q;d' | awk '{ print $9 }'`
       res=$?
       if [[ "${content}" =~ .*\.tar.* ]]; then
-        tar -Oxf ${dataset} > $target/${sensing_date}/$( basename $dataset | sed 's/\.tar.gz//' | sed 's/\.tgz//' )
+        tar -Oxf ${dataset} > $target/$( basename $dataset | sed 's/\.tar.gz//' | sed 's/\.tgz//' )
         res=`echo ${res} + $? | bc`
       else
-        zcat $dataset > ${target}/${sensing_date}/$( basename $dataset | sed 's/\.gz//' )
+        zcat $dataset > ${target}/$( basename $dataset | sed 's/\.gz//' )
         res=`echo ${res} + $? | bc`
       fi
   esac
@@ -117,32 +114,31 @@ __link_ERSCEOS_adore() {
   local content
   content=$( __get_archive_content ${dataset} )
 
-
+  mkdir -p ${target}
+  [ $? != 0 ] && return 1
+ 
   local lea=$( echo ${content} | tr " " "\n" | grep --ignore-case lea_01.001 )
   [ $? != 0 ] && return 1
   local dat=$( echo ${content} | tr " " "\n" | grep --ignore-case dat_01.001 )
   [ $? != 0 ] && return 1
   local vol=$( echo ${content} | tr " " "\n" | grep --ignore-case vdf_dat.001 )
   [ $? != 0 ] && return 1
-  local nul=$( echo ${content} | tr " " "\n" | grep --ignore-case nul_01.001 )
-  [ $? != 0 ] && return 1
-
-  local sensing_date=$( __get_sensing_date $dataset )
+  local nul=$( echo ${content} | tr " " "\n" | grep -E --ignore-case "nul_01.001|nul_dat.001" )
   [ $? != 0 ] && return 1
 
   case $mimetype in
     "application/x-tar")
-      tar -xOf ${dataset} ${lea} > ${target}/${sensing_date}/LEA_01.001
-      tar -xOf ${dataset} ${dat} > ${target}/${sensing_date}/DAT_01.001
-      tar -xOf ${dataset} ${vol} > ${target}/${sensing_date}/VDF_DAT.001
-      tar -xOf ${dataset} ${nul} > ${target}/${sensing_date}/NUL_01.001
+      tar -xOf ${dataset} ${lea} > ${target}/LEA_01.001
+      tar -xOf ${dataset} ${dat} > ${target}/DAT_01.001
+      tar -xOf ${dataset} ${vol} > ${target}/VDF_DAT.001
+      tar -xOf ${dataset} ${nul} > ${target}/NUL_01.001
       res=$?
       ;;
     "application/x-gzip")
-      tar -xzOf ${dataset} ${lea} > ${target}/${sensing_date}/LEA_01.001
-      tar -xzOf ${dataset} ${dat} > ${target}/${sensing_date}/DAT_01.001
-      tar -xzOf ${dataset} ${vol} > ${target}/${sensing_date}/VDF_DAT.001
-      tar -xzOf ${dataset} ${nul} > ${target}/${sensing_date}/NUL_01.001
+      tar -xzOf ${dataset} ${lea} > ${target}/LEA_01.001
+      tar -xzOf ${dataset} ${dat} > ${target}/DAT_01.001
+      tar -xzOf ${dataset} ${vol} > ${target}/VDF_DAT.001
+      tar -xzOf ${dataset} ${nul} > ${target}/NUL_01.001
       res=$?
       ;;
   esac
@@ -162,7 +158,7 @@ __link_ERSCEOS_adore() {
 # @updated 2014-01-13
 # */
 create_env_adore() {
-set -x  
+  
   local master="$1"
   local slave="$2"
   local target="$3"
@@ -186,10 +182,10 @@ set -x
   # TODO add check on mission_slave != mission_master (deal with tandem)
   case $mission in
     "ASAR")
-      __link_N1E1E2_adore ${master} ${target}/data
+      __link_N1E1E2_adore ${master} ${target}/data/${m_sensing_date}
       res=$?
       
-      __link_N1E1E2_adore ${slave} ${target}/data
+      __link_N1E1E2_adore ${slave} ${target}/data/${s_sensing_date}
       res=$?
 
       cat > ${settings} << EOF
@@ -211,28 +207,33 @@ EOF
       ;;
     "TSX" | "TDX")
       # TODO check $res
-      __link_TSX_adore ${master} ${target}/data
+      __link_TSX_adore ${master} ${target}/data/${m_sensing_date}
       res=$?
   
-      __link_TSX_adore ${slave} ${target}/data
+      __link_TSX_adore ${slave} ${target}/data/${s_sensing_date}
       res=$?
-  
+  # TODO check settings
       cat > ${settings} << EOF
 m_in_method='TSX'
 s_in_method="TSX"
-m_in_dat="${target}/data/${m_sensing_date}.cos"
-s_in_dat="${target}/data/${s_sensing_date}.cos"
-m_in_lea="${target}/data/${m_sensing_date}.xml"
-s_in_lea="${target}/data/${s_sensing_date}.xml"
+dataFile="*.cos"
+leaderFile="T*.xml"
+m_in_dat="${target}/data/${m_sensing_date}/${m_sensing_date}.cos"
+s_in_dat="${target}/data/${s_sensing_date}/${s_sensing_date}.cos"
+m_in_lea="${target}/data/${m_sensing_date}/${m_sensing_date}.xml"
+s_in_lea="${target}/data/${s_sensing_date}/${s_sensing_date}.xml"
+m_in_null="dummy"
+s_in_null="dummy"
 master=${m_sensing_date}
 slave=${s_sensing_date}
+scenes_include="( ${m_sensing_date} ${s_sensing_date} )"
 EOF
       ;;
     "ERS1_CEOS" | "ERS2_CEOS")
-      __link_ERSCEOS_adore ${master} ${target}/data
+      __link_ERSCEOS_adore ${master} ${target}/data/${m_sensing_date}
       res=$?
 
-      __link_ERSCEOS__adore ${slave} ${target}/data
+      __link_ERSCEOS_adore ${slave} ${target}/data/${s_sensing_date}
       res=$?
 
       cat > ${settings} << EOF

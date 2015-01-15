@@ -48,19 +48,16 @@ __get_archive_content() {
       res=$?
       ;;
     "application/x-gzip")
-      content=$( zcat -lv ${dataset} | sed '2q;d' | awk '{ print $9 }' )
+      content=$( tar tzf ${dataset} )
       res=$?
-      if [[ "${content}" =~ .*\.tar.* ]]; then
-        content=$( tar tfz ${dataset} )
-        res=$( echo ${res} + $? | bc )
-      else
-        content=${content#$( dirname $content )\/}
-        res=$( echo ${res} + $? | bc )
-      fi
+      [ ${res} -ne 0 ] && {
+        content=$( zcat -lv ${dataset} | sed '2q;d' | awk '{ print $9 }' )
+        res=$?
+      } 
       ;;
   esac
 
-  [ ${res} != 0 ] && return 1
+  [ ${res} -ne 0 ] && return 1
   echo ${content}
 }
 
