@@ -13,14 +13,47 @@ set -o pipefail
 # @updated 2014-01-13
 # */
 __link_N1E1E2_adore() {
+  # TODD add unit test
   local dataset="$1"
-  local target="$2"  
-  
-  __link_N1E1E2_roipac ${dataset} ${target}
-  
-  return $?
-}
+  local target="$2"
+  local mimetype
+  mimetype=$( __get_MIMEtype $dataset )
+  local sensing_date
+  sensing_date=$( get_sensing_date ${dataset}  ) 
+  [ $? != 0 ] && return 1
 
+  mkdir -p ${target}/${sensing_date}
+
+  case ${mimetype} in
+    "application/x-tar")
+      tar -Oxf ${dataset} > ${target}/${sensing_date}/$( basename $dataset | sed 's/\.tar//' )
+      res=$?
+      ;;
+    "application/octet-stream")
+      dataset_folder=$( cd "$( dirname ${dataset} )" && pwd )
+      cp ${dataset_folder}/$( basename ${dataset} ) ${target}/${sensing_date}/$( basename ${dataset} )
+      res=$?
+      #cd - &> /dev/null
+      ;;
+    "application/zip")
+      zcat ${dataset} > ${target}/${sensing_date}/$( basename $dataset )
+      res=$?
+      ;;
+      # TODO handle other mime types
+    "application/x-gzip")
+      content=`zcat -lv ${dataset} | sed '2q;d' | awk '{ print $9 }'`
+      res=$?
+      if [[ "${content}" =~ .*\.tar.* ]]; then
+        tar -Oxf ${dataset} > $target/${sensing_date}/$( basename $dataset | sed 's/\.tar.gz//' | sed 's/\.tgz//' )
+        res=`echo ${res} + $? | bc`
+      else
+        zcat $dataset > ${target}/${sensing_date}/$( basename $dataset | sed 's/\.gz//' )
+        res=`echo ${res} + $? | bc`
+      fi
+  esac
+
+  return ${res}
+}
 
 # /*!
 # __link_TSX_adore() is an internal function to link Envisat ASAR or ERS-1/2 in Envisat format (.E1, .E2)
@@ -121,10 +154,18 @@ create_env_adore() {
       cat > ${settings} << EOF
 m_in_method='ASAR'
 s_in_method='ASAR'
-m_in_dat="${target}/data/$( basename ${master} )"
-s_in_dat="${target}/data/$( basename ${slave} )"
-master=$( basename ${master} )
-slave=$( basename ${slave} )
+m_in_dat="${target}/data/${m_sensing_date}/$( basename ${master} )"
+s_in_dat="${target}/data/${s_sensing_date}/$( basename ${slave} )"
+master=${m_sensing_date}
+slave=${s_sensing_date}
+dataFile="ASA_*.N1"
+m_in_vol="dummy"
+m_in_lea="dummy"
+m_in_null="dummy"
+s_in_vol="dummy"
+s_in_lea="dummy"
+s_in_null="dummy"
+scenes_include="( ${m_sensing_date} ${s_sensing_date} )"
 EOF
       ;;
     "TSX" | "TDX")
