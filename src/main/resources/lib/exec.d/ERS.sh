@@ -22,13 +22,13 @@ __is_ERSCEOS() {
 
   content="$( __get_archive_content $dataset | tr " " "\n" )"
   res=$?
-  lea=$( echo $content | grep --ignore-case lea_01.001 | wc -l )
+  lea=$( echo $content | tr " " "\n" | grep --ignore-case lea_01.001 | wc -l )
   res=$( echo $res + $? | bc )
-  dat=$( echo $content | grep --ignore-case dat_01.001 | wc -l )
+  dat=$( echo $content | tr " " "\n" | grep --ignore-case dat_01.001 | wc -l )
   res=$( echo $res + $? | bc )
-  nul=$( echo $content | grep --ignore-case nul_dat.001 | wc -l )
+  nul=$( echo $content | tr " " "\n" | grep -E --ignore-case "nul_01.001|nul_dat.001" | wc -l )
   res=$( echo $res + $? | bc )
-  vdf=$( echo $content | grep --ignore-case vdf_dat.001 | wc -l )
+  vdf=$( echo $content | tr " " "\n" | grep --ignore-case vdf_dat.001 | wc -l )
   res=$( echo $res + $? | bc )
   [ $res != 0 ] && return 1
   [ $lea == 1 ] && [ $dat == 1 ] && [ $nul == 1 ] && [ $vdf == 1 ] && return 0  

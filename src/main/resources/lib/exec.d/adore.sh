@@ -108,6 +108,47 @@ __link_TSX_adore() {
 
 }
 
+__link_ERSCEOS_adore() {
+  local dataset="$1"
+  local target="$2"
+  local mimetype
+  mimetype=$( __get_MIMEtype ${dataset} )
+ 
+  local content
+  content=$( __get_archive_content ${dataset} )
+
+
+  local lea=$( echo ${content} | tr " " "\n" | grep --ignore-case lea_01.001 )
+  [ $? != 0 ] && return 1
+  local dat=$( echo ${content} | tr " " "\n" | grep --ignore-case dat_01.001 )
+  [ $? != 0 ] && return 1
+  local vol=$( echo ${content} | tr " " "\n" | grep --ignore-case vdf_dat.001 )
+  [ $? != 0 ] && return 1
+  local nul=$( echo ${content} | tr " " "\n" | grep --ignore-case nul_01.001 )
+  [ $? != 0 ] && return 1
+
+  local sensing_date=$( __get_sensing_date $dataset )
+  [ $? != 0 ] && return 1
+
+  case $mimetype in
+    "application/x-tar")
+      tar -xOf ${dataset} ${lea} > ${target}/${sensing_date}/LEA_01.001
+      tar -xOf ${dataset} ${dat} > ${target}/${sensing_date}/DAT_01.001
+      tar -xOf ${dataset} ${vol} > ${target}/${sensing_date}/VDF_DAT.001
+      tar -xOf ${dataset} ${nul} > ${target}/${sensing_date}/NUL_01.001
+      res=$?
+      ;;
+    "application/x-gzip")
+      tar -xzOf ${dataset} ${lea} > ${target}/${sensing_date}/LEA_01.001
+      tar -xzOf ${dataset} ${dat} > ${target}/${sensing_date}/DAT_01.001
+      tar -xzOf ${dataset} ${vol} > ${target}/${sensing_date}/VDF_DAT.001
+      tar -xzOf ${dataset} ${nul} > ${target}/${sensing_date}/NUL_01.001
+      res=$?
+      ;;
+  esac
+  return 0
+}
+
 
 # /*!
 # create_env_adore() is a public function to create the processing environment for Doris/Adore
@@ -121,7 +162,7 @@ __link_TSX_adore() {
 # @updated 2014-01-13
 # */
 create_env_adore() {
-  
+set -x  
   local master="$1"
   local slave="$2"
   local target="$3"
@@ -187,8 +228,32 @@ master=${m_sensing_date}
 slave=${s_sensing_date}
 EOF
       ;;
-    "ERS1-CEOS" | "ERS2-CEOS")
-      __link_ERSCEOS_adore $sar $target/raw
+    "ERS1_CEOS" | "ERS2_CEOS")
+      __link_ERSCEOS_adore ${master} ${target}/data
+      res=$?
+
+      __link_ERSCEOS__adore ${slave} ${target}/data
+      res=$?
+
+      cat > ${settings} << EOF
+m_in_method='ERS'
+s_in_method='ERS'
+dataFile="DAT_01.001"
+leaderFile="LEA_01.001"
+volumeFile="VDF_DAT.001"
+nullFile="NUL_01.001"
+m_in_dat="${target}/data/${m_sensing_date}/DAT_01.001"
+m_in_vol="${target}/data/${m_sensing_date}/VDF_DAT.001"
+m_in_lea="${target}/data/${m_sensing_date}/LEA_01.001"
+m_in_null=${target}/data/${m_sensing_date}/"NUL_01.001"
+s_in_dat="${target}/data/${s_sensing_date}/DAT_01.001"
+s_in_vol="${target}/data/${s_sensing_date}/VDF_DAT.001"
+s_in_lea="${target}/data/${s_sensing_date}/LEA_01.001"
+s_in_null="${target}/data/${s_sensing_date}/NUL_01.001"
+master=${m_sensing_date}
+slave=${s_sensing_date}
+scenes_include="( ${m_sensing_date} ${s_sensing_date} )"
+EOF
       res=$?
       ;;
     *)
