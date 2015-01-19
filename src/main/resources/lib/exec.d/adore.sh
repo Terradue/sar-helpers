@@ -163,7 +163,19 @@ create_env_adore() {
   local slave="$2"
   local target="$3"
 
-  mission=`get_mission $master`
+  [ -z ${master} ] || [ -z ${slave} ] || [ -z ${target} ] && return 1
+
+  __check_mission ${master} ${slave}
+  [ $? != 0 ] && {
+    err "Missions do not match"
+    return 1
+  }
+
+  __check_track ${master} ${slave}
+    [ $? != 0 ] && {
+    err "Tracks do not match"
+    return 1
+  }
 
   mkdir -p $target/data
   [ $? != 0 ] && return 1

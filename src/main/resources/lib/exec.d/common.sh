@@ -162,3 +162,32 @@ __get_metadata_value() {
 
 }
 
+__check_mission() {
+  local master="$1"
+  local slave="$2"
+
+  # TODO check tandem missions
+  m_mission=$( get_mission ${master} )
+  s_mission=$( get_mission ${slave} )
+
+  [ "${m_mission}" != "${s_mission}" ] && {
+    err "Missions do not match: ${m_mission} differs from ${s_mission}" 
+    return 1
+  } || return 0
+
+}
+
+__check_track() {
+  local master="$1"
+  local slave="$2"
+
+  m_track=$( get_track ${master} )
+  s_track=$( get_track ${slave} )
+
+  [ "${m_track}" != "${s_track}" ] && {
+    err "Tracks do not match: ${m_track} differs from ${s_track}"
+    return 1
+  } || return 0
+
+}
+
