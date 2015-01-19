@@ -17,7 +17,7 @@ testAdoreCreateEnv_different_tracks() {
   slave=$_ROOT/../artifacts/ASA_IM__0CNPDE20111031_071059_000000163108_00121_50566_4642.N1
   root=$( create_env_adore ${master} ${slave} ${_TEST} )
   res=$?
-  assertEquals "Different missions must not be accepted" \
+  assertEquals "Different tracks must not be accepted" \
   "1" "$res"
 }
 
