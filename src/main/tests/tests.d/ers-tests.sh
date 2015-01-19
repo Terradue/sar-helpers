@@ -24,7 +24,7 @@ testContentZip() {
 
 testContentgz() {
   out=`__get_archive_content $_ROOT/../artifacts/ASA_IM__0CNPDE20120329_071134_000000163113_00121_52721_6279.N1.gz`
-  assertEquals "Failed to retrieve ASAR gzip archive content" \
+  assertEquals " ${FUNCNAME}:${LINENO} - Failed to retrieve ASAR gzip archive content" \
   "ASA_IM__0CNPDE20120329_071134_000000163113_00121_52721_6279.N1" "$out"
 }
 
