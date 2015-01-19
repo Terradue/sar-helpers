@@ -3,7 +3,7 @@
 set -o pipefail
 
 err() {
-  echo "$@" 1>&2
+  [ "$#" -eq 3 ] && echo "function $2:$3 - " "$1" 1>&2 || echo "$@" 1>&2
 }
 
 # /*!
@@ -168,10 +168,18 @@ __check_mission() {
 
   # TODO check tandem missions
   m_mission=$( get_mission ${master} )
+  [ $? -ne 0 ] && {
+    err "Couldn't retrieve mission info from master" ${FUNCNAME} ${LINENO}
+    return 2
+  }
   s_mission=$( get_mission ${slave} )
+  [ $? -ne 0 ] && {
+    err "Couldn't retrieve mission info from slave" ${FUNCNAME} ${LINENO}
+    return 2
+  }
 
   [ "${m_mission}" != "${s_mission}" ] && {
-    err "Missions do not match: ${m_mission} differs from ${s_mission}" 
+    err "Missions do not match: ${m_mission} differs from ${s_mission}" ${FUNCNAME} ${LINENO}
     return 1
   } || return 0
 
@@ -182,10 +190,19 @@ __check_track() {
   local slave="$2"
 
   m_track=$( get_track ${master} )
+  [ $? -ne 0 ] && {
+    err "Couldn't retrieve track number from master" ${FUNCNAME} ${LINENO}
+    return 2 
+  }
   s_track=$( get_track ${slave} )
+  [ $? -ne 0 ] && {
+    err "Couldn't retrieve mission info from slave" ${FUNCNAME} ${LINENO}
+    return 2
+  }
+
 
   [ "${m_track}" != "${s_track}" ] && {
-    err "Tracks do not match: ${m_track} differs from ${s_track}"
+    err "Tracks do not match: ${m_track} differs from ${s_track}" ${FUNCNAME} ${LINENO}
     return 1
   } || return 0
 
