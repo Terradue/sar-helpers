@@ -12,43 +12,52 @@ set -o pipefail
 #      @updated 2014-01-05
 #  */
 
-function __get_N1_sensing_date() {
-  local dataset="$1"
+function __get_N1_field() {
+  local dataset="$2"
+  local field="$1"
   local mimetype=$( __get_MIMEtype $dataset )
 
   case $mimetype in
     "application/x-tar")
-      sensingdate=$( tar -Oxf $dataset | sed '10q;d' | cut -b 16-26 | xargs -I {} date -d {} +%Y%m%d )
+      myfield=$( tar -Oxf $dataset | head -90 | grep ${field} | sed 's#.*"\(.*\)".*#\1#g' | cut -d "=" -f 2- )
       res=$?
       ;;
     "application/zip")
-      sensingdate=$( zcat -f $dataset | sed -b -n "10,10p" | cut -b 16-26 | xargs -I {} date -d {} +%Y%m%d ) 
+      myfield=$( zcat -f $dataset | head -90 | grep ${field} | sed 's#.*"\(.*\)".*#\1#g' | cut -d "=" -f 2- ) 
       res=$?
       ;;
     "application/octet-stream")
       # TODO check if it's a ASA_IM__0
-      sensingdate=$( sed -b -n "10,10p" $dataset | cut -b 16-26 | xargs -I {} date -d {} +%Y%m%d )
+      myfield=$( head -90 $dataset | grep ${field} | sed 's#.*"\(.*\)".*#\1#g' | cut -d "=" -f 2- )
       res=$?
       ;;
     "application/x-gzip")
       content=$( zcat -lv $dataset | sed '2q;d' | awk '{ print $9 }' )
       res=$?
       if [[ "$content" =~ .*\.tar.* ]]; then
-        sensingdate=$( tar -Oxf $dataset | sed '10q;d' | cut -b 16-26 | xargs -I {} date -d {} +%Y%m%d )
+        myfield=$( tar -Oxf $dataset | head -90 | grep ${field} | sed 's#.*"\(.*\)".*#\1#g' | cut -d "=" -f 2- )
         res=$( echo $res + $? | bc )
       else
-        sensingdate=$( zcat $dataset | sed '10q;d' | cut -b 16-26 | xargs -I {} date -d {} +%Y%m%d )
+        myfield=$( zcat $dataset | head -90 | grep ${field} | sed 's#.*"\(.*\)".*#\1#g' | cut -d "=" -f 2- )
         res=$( echo $res + $? | bc )
       fi
       ;;
   esac
 
   [ ! -z $res ] && [ $res != 0 ] && return 1
-  echo $sensingdate
+  echo "${myfield}"
 }
 
 __get_ASAR_sensing_date() {
-  __get_N1_sensing_date $@
+  __get_N1_field "SENSING_START" $@ | cut -b 1-14 | xargs -I {} date -d {} +%Y%m%d
+}
+
+__get_ASAR_track() {
+  __get_N1_field "REL_ORBIT" $@ | sed 's#.*[0*]\(.*\)#\1#g'
+}
+
+__get_ASAR_direction() {
+  __get_N1_field "REL_ORBIT" $@ 
 }
 
 __is_ASAR() {

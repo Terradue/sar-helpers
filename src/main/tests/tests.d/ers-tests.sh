@@ -17,25 +17,25 @@ testERSCEOSlowcase() {
 }
 
 testContentZip() {
-  out=`__get_archive_content $_ROOT/../artifacts/ASA_IM__0CNPDE20120329_071134_000000163113_00121_52721_6279.N1.zip`
+  out=$( basename `__get_archive_content $_ROOT/../artifacts/ASA_IM__0CNPDE20120329_071134_000000163113_00121_52721_6279.N1.zip` )
   assertEquals "Failed to retrieve ASAR zip archive content" \
   "ASA_IM__0CNPDE20120329_071134_000000163113_00121_52721_6279.N1" "$out"
 }
 
 testContentgz() {
-  out=`__get_archive_content $_ROOT/../artifacts/ASA_IM__0CNPDE20120329_071134_000000163113_00121_52721_6279.N1.gz`
+  out=$( basename `__get_archive_content $_ROOT/../artifacts/ASA_IM__0CNPDE20120329_071134_000000163113_00121_52721_6279.N1.gz` )
   assertEquals " ${FUNCNAME}:${LINENO} - Failed to retrieve ASAR gzip archive content" \
   "ASA_IM__0CNPDE20120329_071134_000000163113_00121_52721_6279.N1" "$out"
 }
 
 testContenttgz() {
-  out=`__get_archive_content $_ROOT/../artifacts/ASA_IM__0CNPDE20120329_071134_000000163113_00121_52721_6279.N1.tgz`
+  out=$( basename `__get_archive_content $_ROOT/../artifacts/ASA_IM__0CNPDE20120329_071134_000000163113_00121_52721_6279.N1.tgz` )
   assertEquals "Failed to retrieve ASAR tgz archive content" \
   "ASA_IM__0CNPDE20120329_071134_000000163113_00121_52721_6279.N1" "$out"
 }
 
 testContenttargz() {
-  out=`__get_archive_content $_ROOT/../artifacts/ASA_IM__0CNPDE20120329_071134_000000163113_00121_52721_6279.N1.tar.gz`
+  out=$( basename `__get_archive_content $_ROOT/../artifacts/ASA_IM__0CNPDE20120329_071134_000000163113_00121_52721_6279.N1.tar.gz` )
   assertEquals "Failed to retrieve ASAR tar.gz archive content" \
   "ASA_IM__0CNPDE20120329_071134_000000163113_00121_52721_6279.N1" "$out"
 }
