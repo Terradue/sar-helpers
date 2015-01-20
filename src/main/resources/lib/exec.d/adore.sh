@@ -174,22 +174,26 @@ create_env_adore() {
   __check_track ${master} ${slave}
     [ $? != 0 ] && {
     err "Tracks do not match"
-    return 1
+    return 2
   }
 
   local m_sensing_date
   m_sensing_date=$( get_sensing_date $master )
-  res=$?
+  [ $? != 0 ] && return 3 
 
   local s_sensing_date
   s_sensing_date=$( get_sensing_date $slave )
-  res=$?
+  [ $? != 0 ] && return 3
 
   #changing the target to $target/$m_sensing_date_$s_sensing_date
   target="$target/${m_sensing_date}_${s_sensing_date}"
 
   mkdir -p $target/data
-  [ $? != 0 ] && return 1
+  [ $? != 0 ] && return 3
+  mkdir -p $target/data/${m_sensing_date}
+  [ $? != 0 ] && return 3
+  mkdir -p $target/data/${s_sensing_date}
+  [ $? != 0 ] && return 3
 
   local settings
   settings=${target}/settings.set
@@ -200,10 +204,10 @@ create_env_adore() {
   case $mission in
     "ASAR")
       __link_N1E1E2_adore ${master} ${target}/data/${m_sensing_date}
-      res=$?
+      [ $? != 0 ] && return 3
       
       __link_N1E1E2_adore ${slave} ${target}/data/${s_sensing_date}
-      res=$?
+      [ $? != 0 ] && return 3
 
       cat > ${settings} << EOF
 m_in_method='ASAR'
@@ -225,10 +229,10 @@ EOF
     "TSX" | "TDX")
       # TODO check $res
       __link_TSX_adore ${master} ${target}/data/${m_sensing_date}
-      res=$?
+      [ $? != 0 ] && return 3
   
       __link_TSX_adore ${slave} ${target}/data/${s_sensing_date}
-      res=$?
+      [ $? != 0 ] && return 3
   # TODO check settings
       cat > ${settings} << EOF
 m_in_method='TSX'
@@ -248,10 +252,10 @@ EOF
       ;;
     "ERS1_CEOS" | "ERS2_CEOS")
       __link_ERSCEOS_adore ${master} ${target}/data/${m_sensing_date}
-      res=$?
+      [ $? != 0 ] && return 3
 
       __link_ERSCEOS_adore ${slave} ${target}/data/${s_sensing_date}
-      res=$?
+      [ $? != 0 ] && return 3
 
       cat > ${settings} << EOF
 m_in_method='ERS'
@@ -272,17 +276,17 @@ master=${m_sensing_date}
 slave=${s_sensing_date}
 scenes_include="( ${m_sensing_date} ${s_sensing_date} )"
 EOF
-      res=$?
+      [ $? != 0 ] && return 3
       ;;
     *)
-      return 1
+      [ $? != 0 ] && return 3
       ;;
     esac
 
   [ -e ${settings} ] && sed -i  's/^/settings apply -r -q /' $settings  
-  res=$?
+  [ $? != 0 ] && return 3
   
   echo ${target} 
-  return $res
+  return 0
 
 }
