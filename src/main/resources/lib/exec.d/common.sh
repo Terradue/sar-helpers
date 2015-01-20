@@ -48,7 +48,7 @@ __get_archive_content() {
       res=$?
       ;;
     "application/x-gzip")
-      content=$( tar tzf ${dataset} )
+      content="$( echo "${dataset}" | sed 's#\(.*/\).*#\1#g' )$( tar tzf ${dataset} 2> /dev/null )"
       res=$?
       [ ${res} -ne 0 ] && {
         content=$( zcat -lv ${dataset} | sed '2q;d' | awk '{ print $9 }' )
@@ -196,10 +196,9 @@ __check_track() {
   }
   s_track=$( get_track ${slave} )
   [ $? -ne 0 ] && {
-    err "Couldn't retrieve mission info from slave" ${FUNCNAME} ${LINENO}
+    err "Couldn't retrieve track number from slave" ${FUNCNAME} ${LINENO}
     return 2
   }
-
 
   [ "${m_track}" != "${s_track}" ] && {
     err "Tracks do not match: ${m_track} differs from ${s_track}" ${FUNCNAME} ${LINENO}

@@ -3,12 +3,12 @@
 set -o pipefail
 
 function __get_ERS1_SAR_sensing_date() {
-  echo "$( __get_N1_sensing_date $@ )"
+  echo "$( __get_ASAR_sensing_date $@ )"
   return 0
 }
 
 function __get_ERS2_SAR_sensing_date() {
-  echo "$( __get_N1_sensing_date $@ )"
+  echo "$( __get_ASAR_sensing_date $@ )"
   return 0
 }
 

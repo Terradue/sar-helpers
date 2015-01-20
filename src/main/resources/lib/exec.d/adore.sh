@@ -195,6 +195,8 @@ create_env_adore() {
   settings=${target}/settings.set
 
   # TODO add check on mission_slave != mission_master (deal with tandem)
+  local mission
+  mission=$( get_mission "${master}" )
   case $mission in
     "ASAR")
       __link_N1E1E2_adore ${master} ${target}/data/${m_sensing_date}
