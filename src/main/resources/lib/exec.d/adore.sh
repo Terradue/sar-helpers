@@ -177,12 +177,6 @@ create_env_adore() {
     return 1
   }
 
-  mkdir -p $target/data
-  [ $? != 0 ] && return 1
-
-  local settings
-  settings=${target}/settings.set
-
   local m_sensing_date
   m_sensing_date=$( get_sensing_date $master )
   res=$?
@@ -190,6 +184,15 @@ create_env_adore() {
   local s_sensing_date
   s_sensing_date=$( get_sensing_date $slave )
   res=$?
+
+  #changing the target to $target/$m_sensing_date_$s_sensing_date
+  target="$target/${m_sensing_date}_${s_sensing_date}"
+
+  mkdir -p $target/data
+  [ $? != 0 ] && return 1
+
+  local settings
+  settings=${target}/settings.set
 
   # TODO add check on mission_slave != mission_master (deal with tandem)
   local mission
@@ -278,7 +281,8 @@ EOF
 
   [ -e ${settings} ] && sed -i  's/^/settings apply -r -q /' $settings  
   res=$?
-   
+  
+  echo ${target} 
   return $res
 
 }
