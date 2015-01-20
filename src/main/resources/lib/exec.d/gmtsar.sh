@@ -107,14 +107,25 @@ create_env_gmtsar() {
   local slave="$2"
   local target="$3"
 
-  # TODO check how many parameters were provided
+  [ -z ${master} ] || [ -z ${slave} ] || [ -z ${target} ] && return 1
+
+  __check_mission ${master} ${slave}
+  [ $? != 0 ] && {
+    err "Missions do not match"
+    return 1
+  }
+
+  __check_track ${master} ${slave}
+    [ $? != 0 ] && {
+    err "Tracks do not match"
+    return 1
+  }
 
   mission=$( get_mission $master )
 
   mkdir -p $target/raw
   [ $? != 0 ] && return 1
 
-  # TODO add check on mission_slave != mission_master (deal with tandem)
   for sar in $master $slave  
   do 
     case $mission in

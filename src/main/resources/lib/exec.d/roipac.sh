@@ -77,6 +77,20 @@ create_env_roipac() {
   local slave="$2"
   local target="$3"
 
+  [ -z ${master} ] || [ -z ${slave} ] || [ -z ${target} ] && return 1
+
+  __check_mission ${master} ${slave}
+  [ $? != 0 ] && {
+    err "Missions do not match"
+    return 1
+  }
+
+  __check_track ${master} ${slave}
+    [ $? != 0 ] && {
+    err "Tracks do not match"
+    return 1
+  }
+
   mission=`get_mission $master`
 
   mkdir -p $target/raw

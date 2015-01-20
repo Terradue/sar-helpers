@@ -3,7 +3,7 @@
 set -o pipefail
 
 err() {
-  echo "$@" 1>&2
+  [ "$#" -eq 3 ] && echo "function $2:$3 - " "$1" 1>&2 || echo "$@" 1>&2
 }
 
 # /*!
@@ -48,7 +48,7 @@ __get_archive_content() {
       res=$?
       ;;
     "application/x-gzip")
-      content=$( tar tzf ${dataset} )
+      content="$( echo "${dataset}" | sed 's#\(.*/\).*#\1#g' )$( tar tzf ${dataset} 2> /dev/null )"
       res=$?
       [ ${res} -ne 0 ] && {
         content=$( zcat -lv ${dataset} | sed '2q;d' | awk '{ print $9 }' )
@@ -159,6 +159,51 @@ __get_metadata_value() {
   metadata_value=$( __get_${mission}_${metadata_field} $dataset )
   res=$?
   [ $res == 0 ] && echo $metadata_value || return 1
+
+}
+
+__check_mission() {
+  local master="$1"
+  local slave="$2"
+
+  # TODO check tandem missions
+  m_mission=$( get_mission ${master} )
+  [ $? -ne 0 ] && {
+    err "Couldn't retrieve mission info from master" ${FUNCNAME} ${LINENO}
+    return 2
+  }
+  s_mission=$( get_mission ${slave} )
+  [ $? -ne 0 ] && {
+    err "Couldn't retrieve mission info from slave" ${FUNCNAME} ${LINENO}
+    return 2
+  }
+
+  [ "${m_mission}" != "${s_mission}" ] && {
+    err "Missions do not match: ${m_mission} differs from ${s_mission}" ${FUNCNAME} ${LINENO}
+    return 1
+  } || return 0
+
+}
+
+__check_track() {
+  local master="$1"
+  local slave="$2"
+
+  m_track=$( get_track ${master} )
+  [ $? -ne 0 ] && {
+    err "Couldn't retrieve track number from master" ${FUNCNAME} ${LINENO}
+    return 2 
+  }
+  s_track=$( get_track ${slave} )
+  [ $? -ne 0 ] && {
+    err "Couldn't retrieve track number from slave" ${FUNCNAME} ${LINENO}
+    return 2
+  }
+
+  [ "${m_track}" != "${s_track}" ] && {
+    err "Tracks do not match: ${m_track} differs from ${s_track}" ${FUNCNAME} ${LINENO}
+    return 1
+  } || return 0
 
 }
 

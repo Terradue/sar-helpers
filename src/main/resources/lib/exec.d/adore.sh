@@ -163,7 +163,19 @@ create_env_adore() {
   local slave="$2"
   local target="$3"
 
-  mission=`get_mission $master`
+  [ -z ${master} ] || [ -z ${slave} ] || [ -z ${target} ] && return 1
+
+  __check_mission ${master} ${slave}
+  [ $? != 0 ] && {
+    err "Missions do not match"
+    return 1
+  }
+
+  __check_track ${master} ${slave}
+    [ $? != 0 ] && {
+    err "Tracks do not match"
+    return 1
+  }
 
   local m_sensing_date
   m_sensing_date=$( get_sensing_date $master )
@@ -183,6 +195,8 @@ create_env_adore() {
   settings=${target}/settings.set
 
   # TODO add check on mission_slave != mission_master (deal with tandem)
+  local mission
+  mission=$( get_mission "${master}" )
   case $mission in
     "ASAR")
       __link_N1E1E2_adore ${master} ${target}/data/${m_sensing_date}
