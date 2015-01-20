@@ -21,4 +21,15 @@ testAdoreCreateEnv_different_tracks() {
   "1" "$res"
 }
 
+testAdoreCreateEnv_same_tracks() {
+  # we know we passed L1 and L0, we saved some storage space by doing this
+  master=$_ROOT/../artifacts/ASA_IM__0CNPDE20120329_071134_000000163113_00121_52721_6279.N1
+  slave=$_ROOT/../artifacts/ASA_IM__0CNPDE20111031_071059_000000163108_00121_50566_4642.N1
+  root=$( create_env_adore ${master} ${slave} ${_TEST} 2> /dev/null )
+  res=$?
+  assertEquals "Failed to detect same tracks" \
+  "0" "$res"
+}
+
+
 . ./common-tests.inc
