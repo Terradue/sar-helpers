@@ -281,7 +281,10 @@ EOF
     *)
       [ $? != 0 ] && return 3
       ;;
-    esac
+  esac
+
+  #adds a common output folder
+  echo "outputFolder=${target}/${master}_${slave}" >> ${settings}
 
   [ -e ${settings} ] && sed -i  's/^/settings apply -r -q /' $settings  
   [ $? != 0 ] && return 3
