@@ -284,7 +284,7 @@ EOF
   esac
 
   #adds a common output folder
-  echo "outputFolder=${target}/${master}_${slave}" >> ${settings}
+  echo "outputFolder=${target}/${m_sensing_date}_${s_sensing_date}" >> ${settings}
 
   [ -e ${settings} ] && sed -i  's/^/settings apply -r -q /' $settings  
   [ $? != 0 ] && return 3
