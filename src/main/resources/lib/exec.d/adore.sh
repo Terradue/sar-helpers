@@ -28,7 +28,7 @@ __link_N1E1E2_adore() {
       ;;
     "application/octet-stream")
       dataset_folder=$( cd "$( dirname ${dataset} )" && pwd )
-      cp ${dataset_folder}/$( basename ${dataset} ) ${target}/$( basename ${dataset} )
+      mv ${dataset_folder}/$( basename ${dataset} ) ${target}/$( basename ${dataset} )
       res=$?
       #cd - &> /dev/null
       ;;
