@@ -6,7 +6,7 @@
   <packaging>rpm</packaging>
   <name>sar-helpers</name>
   <description>SAR helper functions</description>
-  <version>0.1</version>
+  <version>0.2</version>
   <scm>
     <connection>scm:git:git@github.com:Terradue/sar-helpers</connection>
     <developerConnection>scm:git:git@github.com:Terradue/sar-helpers.git</developerConnection>
