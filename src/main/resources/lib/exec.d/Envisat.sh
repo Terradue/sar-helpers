@@ -44,7 +44,7 @@ function __get_N1_field() {
       ;;
   esac
 
-  [ ! -z $res ] && [ $res != 0 ] && return 1
+  [ ! -z $res ] && [ $res != 0 ] && [ $res != 141 ] && return 1
   echo "${myfield}"
 }
 

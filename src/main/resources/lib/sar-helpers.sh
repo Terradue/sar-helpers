@@ -1,5 +1,5 @@
 #!/bin/bash
-
+#set -x
 set -o pipefail
 
 [ ! -z "${SAR_HELPERS_HOME}" ] && {

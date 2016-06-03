@@ -1,7 +1,7 @@
 #!/bin/bash
 
 set -o pipefail
-
+#set -x
 function __get_ERS1_SAR_sensing_date() {
   echo "$( __get_ASAR_sensing_date $@ )"
   return 0
@@ -13,7 +13,8 @@ function __get_ERS2_SAR_sensing_date() {
 }
 
 __is_SAR() {
-  __is_N1E1E2 $@ "SAR_IM__0"
+ # set -x
+  __is_N1E1E2 $@ "SAR_IM__0,SAR_IMS_1"
   return $?
 }
 
@@ -92,7 +93,7 @@ __get_E1E2_mission() {
 
   case $mimetype in
     "application/x-tar")
-      [ $( tar tf $dataset | wc -l ) != 1 ] && return 1
+      [ $( tar tf $dataset | head -1 | wc -l ) != 1 ] && return 1
       E1=$( tar -Oxf $dataset | sed -b '1q;d' | grep ".E1" | wc -l )
       E2=$( tar -Oxf $dataset | sed -b '1q;d' | grep ".E2" | wc -l )
       ;;
@@ -281,3 +282,8 @@ __get_ERS2_CEOS_track() {
   return $?
 }
 
+
+__get_ERS2_SAR_track() {
+  __get_ASAR_track $@
+  return $?
+}

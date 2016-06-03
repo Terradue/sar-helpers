@@ -1,5 +1,5 @@
 #!/bin/bash
-
+#set -x
 set -o pipefail
 
 err() {
@@ -60,17 +60,16 @@ __get_archive_content() {
   [ ${res} -ne 0 ] && return 1
   echo ${content}
 }
-
 __is_N1E1E2() {
   # NOTE will fail if zip has a folder structure
   local dataset="$1"
   local test="$2"
   local mimetype=$( __get_MIMEtype $dataset )
-
   case $mimetype in
     "application/x-tar")
-      [ $( tar tf $dataset | wc -l ) != 1 ] && return 1  
+      [ $( tar tf $dataset | head -1 | wc -l ) != 1 ] && return 1  
       prefix=$( tar -Oxf $dataset | sed -b '1q;d' | cut -b 10-18 )
+      #prefix="SAR_IMS_1"
       res=$?
       ;;
     "application/zip")
@@ -95,7 +94,7 @@ __is_N1E1E2() {
       ;;
   esac
 
-  [ ! -z $res ] && [ $res != 0 ] && return 1
+  [ ! -z $res ] && [ $res != 0 ] && [ $res != 141 ] && return 1
   
   #tests the provided prefix (or a list separated by coma)
   for myprefix in $( echo "${test}" | tr ',' '\n' )
@@ -150,16 +149,16 @@ __get_metadata_value() {
   [ $? != 0 ] && return 1
 
   #let's check if a function for the specific mission exists
-  type __get_${mission}_${metadata_field} &> /dev/null
+  __get_${mission}_${metadata_field} 1>/dev/null
   [ $? != 0 ] && { 
     err "Missing function __get_${mission}_${metadata_field}"
     return 1
   }
 
-  metadata_value=$( __get_${mission}_${metadata_field} $dataset )
-  res=$?
-  [ $res == 0 ] && echo $metadata_value || return 1
-
+#  metadata_value=$(__get_${mission}_${metadata_field} $dataset)
+#  res=$?
+ # [ $res == 0 ] && echo $metadata_value || return 1
+ __get_${mission}_${metadata_field} $dataset || return 1
 }
 
 __check_mission() {

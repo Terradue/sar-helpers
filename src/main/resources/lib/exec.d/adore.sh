@@ -202,7 +202,7 @@ create_env_adore() {
   local mission
   mission=$( get_mission "${master}" )
   case $mission in
-    "ASAR")
+    "ASAR" | "ERS2_SAR")
       __link_N1E1E2_adore ${master} ${target}/data/${m_sensing_date}
       [ $? != 0 ] && return 3
       
@@ -285,7 +285,6 @@ EOF
 
   #adds a common output folder
   #echo "outputFolder=${target}/${m_sensing_date}_${s_sensing_date}" >> ${settings}
-
   [ -e ${settings} ] && sed -i  's/^/settings apply -r -q /' $settings  
   [ $? != 0 ] && return 3
   
